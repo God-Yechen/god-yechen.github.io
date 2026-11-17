@@ -21,10 +21,10 @@ description: 这是王业辰的个人网站，记录我的机械工程学习经�
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
-url: ""
+url: "https://wycnb.top"
 
 github:
-  username: github_username # change to your GitHub username
+  username: God-Yechen
 
 twitter:
   username: twitter_username # change to your Twitter username
@@ -32,8 +32,8 @@ twitter:
 social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
-  name: your_full_name
-  email: example@domain.com # change to your email address
+  name: 王业辰
+  email: wangyechen7500@126.com # change to your email address
   fediverse_handle: # fill in your fediverse handle. E.g. "@username@domain.com"
   links:
     # The first element serves as the copyright owner's link
