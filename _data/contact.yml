@@ -9,6 +9,9 @@
 
 - type: email
   icon: "fas fa-envelope"
+  addresses:
+    - wangyechen7500@126.com
+    - gequde1@gmail.com
   noblank: true # open link in current tab
 
 - type: rss
