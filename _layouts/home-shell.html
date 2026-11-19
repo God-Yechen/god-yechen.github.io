@@ -81,6 +81,7 @@ layout: compress
       {% include {{ script_path }} %}
     {% endfor %}
     </div>
+    {% include certificate-dialog.html %}
     <div id="panel-status" class="visually-hidden" role="status" aria-live="polite"></div>
     {% include_cached search-loader.html lang=lang %}
   </body>

@@ -1,0 +1,77 @@
+---
+layout: default
+---
+
+{% assign empty_certificates = '' | split: '' %}
+<article class="px-1 honors-page">
+  <header class="honors-page-header">
+    <h1 class="dynamic-title">{{ page.title | escape }}</h1>
+    <search class="honors-search" aria-label="搜索荣誉记录">
+      <i class="fas fa-search" aria-hidden="true"></i>
+      <label for="honors-search-input" class="visually-hidden">搜索荣誉记录</label>
+      <input id="honors-search-input" type="search" placeholder="搜索名称、时间、单位…" autocomplete="off" maxlength="200" aria-controls="honors-records" aria-describedby="honors-search-status">
+      <button type="button" class="honors-search-clear" data-honors-clear aria-label="清除荣誉搜索" hidden><i class="fas fa-times" aria-hidden="true"></i></button>
+    </search>
+  </header>
+  <div class="content">
+{{ content }}
+<p id="honors-search-status" class="honors-search-status" role="status" aria-live="polite" hidden></p>
+<div id="honors-records" class="honors-sections">
+  {% for section in site.data.honors %}
+    {% assign records = section.records | sort: 'date' | reverse %}
+    <section id="honors-{{ section.id | escape }}" class="honors-section" aria-labelledby="honors-{{ section.id | escape }}-title">
+      <header class="honors-section-heading">
+        <h2 id="honors-{{ section.id | escape }}-title">{{ section.title | escape }}</h2>
+        {% if records.size > 0 %}<span class="honors-count">{{ records.size }} 项</span>{% endif %}
+      </header>
+      {% if section.kind == 'publications' %}
+        <ol class="honors-publications">
+          {% for record in records %}
+            <li class="honors-publication" data-honors-record>
+              <h3 class="honors-publication-title" lang="en" data-toc-skip>{% include honor-certificate-link.html record=record %}</h3>
+              <div class="honors-publication-meta">
+                <time datetime="{{ record.date | escape }}">{{ record.date | escape }}</time>
+                {% if record.type %}<span class="honors-type">{{ record.type | escape }}</span>{% endif %}
+                {% if record.authorship %}<span class="honors-authorship">{{ record.authorship | escape }}</span>{% endif %}
+                {% if record.status %}<span class="honors-status">{{ record.status | escape }}</span>{% endif %}
+              </div>
+              <p class="honors-publisher" lang="en">{{ record.publisher | escape }}</p>
+            </li>
+          {% else %}
+            <li class="honors-empty">科研成果正在整理中。</li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        {% if section.id == 'competitions' %}<p class="honors-scroll-hint">左右滑动查看完整表格</p>{% endif %}
+        <div class="honors-table-wrapper"{% if section.id == 'competitions' %} tabindex="0" role="region" aria-label="竞赛奖项表格"{% endif %}>
+          <table class="honors-table{% if section.id == 'competitions' %} honors-competitions-table{% endif %}">
+            <caption class="visually-hidden">{{ section.title | escape }}，按时间从新到旧排列</caption>
+            <thead>
+              <tr>
+                <th scope="col">时间</th>
+                <th scope="col">{{ section.name_label | escape }}</th>
+                {% if section.id == 'competitions' %}<th scope="col">{{ section.award_label | default: '奖项' | escape }}</th>{% endif %}
+                <th scope="col">{{ section.organizer_label | escape }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in records %}
+                <tr data-honors-record>
+                  <td class="honors-date">{{ record.date | escape }}</td>
+                  <td>{% include honor-certificate-link.html record=record %}{% if record.detail %}<span class="honors-record-detail">{{ record.detail | escape }}</span>{% endif %}</td>
+                  {% if section.id == 'competitions' %}<td><span class="honors-award">{{ record.award | escape }}</span></td>{% endif %}
+                  <td>{{ record.organizer | escape }}</td>
+                </tr>
+              {% else %}
+                <tr><td colspan="{% if section.id == 'competitions' %}4{% else %}3{% endif %}" class="honors-empty">{{ section.title | escape }}正在整理中。</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </section>
+  {% endfor %}
+</div>
+<p class="honors-no-results" hidden>没有找到相关记录，换个关键词试试。</p>
+  </div>
+</article>
