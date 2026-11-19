@@ -1,0 +1,87 @@
+---
+layout: compress
+---
+
+<!doctype html>
+{% include origin-type.html %}
+{% include lang.html %}
+{% assign homepage = site.pages | where: 'url', '/' | first %}
+{% assign welcome = page.welcome | default: homepage.welcome %}
+<html lang="{{ page.lang | default: site.alt_lang | default: site.lang }}"{% if site.theme_mode == 'light' or site.theme_mode == 'dark' %} data-bs-theme="{{ site.theme_mode }}"{% endif %}>
+  {% include head.html lang=lang %}
+  <body class="home-page">
+    <div class="home-navbar">
+      <a class="home-brand" href="{{ '/' | relative_url }}">{{ site.title | escape }}</a>
+      <nav class="home-navbar-links" aria-label="主导航">
+        <a href="{{ '/' | relative_url }}"{% if page.layout == 'home' %} aria-current="page"{% endif %}>首页</a>
+        {% for tab in site.tabs %}
+          {% if tab.nav == false %}{% continue %}{% endif %}
+          {% assign tab_active = false %}
+          {% if tab.url == page.url %}{% assign tab_active = true %}{% endif %}
+          {% if tab.url == '/categories/' and page.url contains '/categories/' %}{% assign tab_active = true %}{% endif %}
+          <a href="{{ tab.url | relative_url }}"{% if tab_active %} aria-current="page"{% endif %}>{{ tab.title | escape }}</a>
+        {% endfor %}
+      </nav>
+      <div class="home-navbar-tools">
+        {% include topbar.html lang=lang %}
+      </div>
+    </div>
+
+    {% if welcome %}
+      <section class="home-panorama" aria-labelledby="home-welcome-title">
+        <img class="home-panorama-image" src="{{ welcome.image | relative_url }}" alt="" fetchpriority="high" decoding="async">
+        <div class="home-panorama-text">
+          <h1 id="home-welcome-title">{{ welcome.title | escape }}</h1>
+          <p lang="en">{{ welcome.subtitle | escape }}</p>
+        </div>
+      </section>
+    {% endif %}
+
+    <div id="main-wrapper">
+      <div class="container">
+        <div class="row home-content-grid">
+          {% include sidebar.html lang=lang %}
+          <main class="home-posts" tabindex="-1" data-page-layout="{{ page.layout }}" aria-label="{% if page.layout == 'home' %}最新文章{% else %}{{ page.title | default: '页面内容' | escape }}{% endif %}">
+            <div id="panel-content">
+            {% if page.layout == 'home' %}
+              <header class="home-feed-heading"><h2>最新文章</h2></header>
+            {% endif %}
+            {% include refactor-content.html content=content lang=lang %}
+            {% if layout.panel_includes %}
+              <aside id="panel-wrapper" class="site-article-tools" aria-label="文章工具">
+                {% for panel_include in layout.panel_includes %}
+                  {% assign panel_path = panel_include | append: '.html' %}
+                  {% include {{ panel_path }} lang=lang %}
+                {% endfor %}
+              </aside>
+            {% endif %}
+            {% for tail_include in layout.tail_includes %}
+              {% assign tail_path = tail_include | append: '.html' %}
+              {% include {{ tail_path }} lang=lang %}
+            {% endfor %}
+            </div>
+          </main>
+        </div>
+        <div class="row home-footer-row">
+          <div id="tail-wrapper">
+            {% include_cached footer.html lang=lang %}
+          </div>
+        </div>
+        {% include_cached search-results.html lang=lang %}
+      </div>
+      <aside aria-label="Scroll to Top">
+        <button id="back-to-top" type="button" class="btn btn-lg btn-box-shadow"><i class="fas fa-angle-up"></i></button>
+      </aside>
+    </div>
+    <div id="mask" class="d-none position-fixed w-100 h-100 z-1"></div>
+    {% if site.pwa.enabled %}{% include_cached notification.html lang=lang %}{% endif %}
+    <div id="panel-page-scripts" hidden>
+    {% for script_include in layout.script_includes %}
+      {% assign script_path = script_include | append: '.html' %}
+      {% include {{ script_path }} %}
+    {% endfor %}
+    </div>
+    <div id="panel-status" class="visually-hidden" role="status" aria-live="polite"></div>
+    {% include_cached search-loader.html lang=lang %}
+  </body>
+</html>

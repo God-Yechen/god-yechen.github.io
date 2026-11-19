@@ -1,0 +1,32 @@
+---
+layout: page
+---
+
+{% assign section_names = site.data.category_sections | default: empty %}
+{% assign sorted_categories = site.categories | sort %}
+{% for category in sorted_categories %}
+  {% assign category_name = category | first %}
+  {% unless section_names contains category_name %}
+    {% assign section_names = section_names | push: category_name %}
+  {% endunless %}
+{% endfor %}
+
+{% assign empty_posts = '' | split: '' %}
+{% for category_name in section_names %}
+  {% assign category_posts = site.categories[category_name] | default: empty_posts | where_exp: 'post', 'post.hidden != true' | sort: 'date' | reverse %}
+  <section id="{{ category_name | slugify | escape }}" class="mb-5" style="scroll-margin-top: 5rem;">
+    <h2>{{ category_name | escape }}</h2>
+    {% if category_posts.size > 0 %}
+      <ul class="list-unstyled">
+        {% for post in category_posts %}
+          <li class="d-flex justify-content-between gap-3 mb-2">
+            <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
+            <time class="text-muted text-nowrap" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y-%m-%d' }}</time>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">暂无文章。</p>
+    {% endif %}
+  </section>
+{% endfor %}

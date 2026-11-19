@@ -16,6 +16,66 @@
   </header>
   <!-- .profile-wrapper -->
 
+  {% assign category_sections = site.data.category_sections | default: empty %}
+  {% assign sorted_categories = site.categories | sort %}
+  {% for category in sorted_categories %}
+    {% assign category_name = category | first %}
+    {% unless category_sections contains category_name %}
+      {% assign category_sections = category_sections | push: category_name %}
+    {% endunless %}
+  {% endfor %}
+
+  <style>
+    #sidebar .sidebar-category-row {
+      display: flex;
+      align-items: center;
+    }
+
+    #sidebar .sidebar-category-row .nav-link {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #sidebar .sidebar-category-toggle {
+      display: grid;
+      place-items: center;
+      flex: 0 0 2rem;
+      height: 2rem;
+      padding: 0;
+      border: 0;
+      border-radius: 0.5rem;
+      background: transparent;
+      color: var(--sidebar-active-color);
+      cursor: pointer;
+    }
+
+    #sidebar .sidebar-category-toggle:hover {
+      background: var(--sidebar-hover-bg);
+    }
+
+    #sidebar .sidebar-category-toggle[aria-expanded='false'] i {
+      transform: rotate(-90deg);
+    }
+
+    #sidebar .sidebar-subnav {
+      margin: 0.3rem 0 0.5rem 2.5rem;
+      padding-left: 0.8rem;
+      border-left: 1px solid var(--sidebar-border-color);
+    }
+
+    #sidebar .sidebar-subnav a {
+      display: block;
+      padding: 0.4rem 0.5rem;
+      border-radius: 0.4rem;
+      font-size: 0.85rem;
+      overflow-wrap: anywhere;
+    }
+
+    #sidebar .sidebar-subnav a:hover {
+      background: var(--sidebar-hover-bg);
+    }
+  </style>
+
   <nav class="flex-column flex-grow-1 w-100 ps-0">
     <ul class="nav">
       <!-- home -->
@@ -27,18 +87,46 @@
       </li>
       <!-- the real tabs -->
       {% for tab in site.tabs %}
-        <li class="nav-item{% if tab.url == page.url %}{{ " active" }}{% endif %}">
-          <a href="{{ tab.url | relative_url }}" class="nav-link">
+        {% if tab.nav == false %}{% continue %}{% endif %}
+        {% assign tab_active = false %}
+        {% if tab.url == page.url %}{% assign tab_active = true %}{% endif %}
+        {% if tab.url == '/categories/' and page.url contains '/categories/' %}{% assign tab_active = true %}{% endif %}
+        <li class="nav-item{% if tab_active %} active{% endif %}">
+          {% capture tab_name %}{{ tab.url | split: '/' }}{% endcapture %}
+          {% if tab.url == '/categories/' %}<div class="sidebar-category-row">{% endif %}
+          <a href="{{ tab.url | relative_url }}" class="nav-link"{% if tab_active %} aria-current="page"{% endif %}>
             <i class="fa-fw {{ tab.icon }}"></i>
-            {% capture tab_name %}{{ tab.url | split: '/' }}{% endcapture %}
-
-            <span>{{ site.data.locales[include.lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
+            <span>{{ site.data.locales[include.lang].tabs[tab_name] | default: tab.title | upcase }}</span>
           </a>
+          {% if tab.url == '/categories/' %}
+            <button type="button" class="sidebar-category-toggle" aria-label="收起专栏" aria-expanded="true" aria-controls="sidebar-category-links">
+              <i class="fas fa-angle-down" aria-hidden="true"></i>
+            </button>
+            </div>
+            <ul id="sidebar-category-links" class="sidebar-subnav list-unstyled">
+              {% for category_name in category_sections %}
+                {% capture category_url %}/categories/#{{ category_name | slugify }}{% endcapture %}
+                <li><a href="{{ category_url | relative_url }}">{{ category_name | escape }}</a></li>
+              {% endfor %}
+            </ul>
+          {% endif %}
         </li>
-        <!-- .nav-item -->
       {% endfor %}
     </ul>
   </nav>
+
+  <script>
+    (() => {
+      const toggle = document.querySelector('.sidebar-category-toggle');
+      const links = document.getElementById('sidebar-category-links');
+      toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!expanded));
+        toggle.setAttribute('aria-label', expanded ? '展开专栏' : '收起专栏');
+        links.hidden = expanded;
+      });
+    })();
+  </script>
 
   <div class="sidebar-bottom d-flex flex-wrap align-items-center w-100">
     {% unless site.theme_mode == 'light' or site.theme_mode == 'dark' %}
@@ -104,8 +192,8 @@
           {%- capture url -%}
             https://{{ entry.type }}.com/{{ site[entry.type].username }}
           {%- endcapture -%}
-        {% when 'email' %}
-          {% assign url = '#sidebar-email-dialog' %}
+        {% when 'email', 'phone', 'wechat' %}
+          {% assign url = '#sidebar-' | append: entry.type | append: '-dialog' %}
         {% when 'rss' %}
           {% assign url = '/feed.xml' | relative_url %}
         {% else %}
@@ -115,18 +203,19 @@
       {% if url %}
         <a
           href="{{ url }}"
-          {% if entry.type == 'email' %}
-            id="sidebar-email-trigger"
+          {% if entry.type == 'email' or entry.type == 'phone' or entry.type == 'wechat' %}
+            id="sidebar-{{ entry.type }}-trigger"
             role="button"
-            aria-label="查看联系邮箱"
+            aria-label="{% if entry.type == 'email' %}查看联系邮箱{% elsif entry.type == 'wechat' %}查看微信二维码{% else %}联系我{% endif %}"
             aria-haspopup="dialog"
-            aria-controls="sidebar-email-dialog"
+            aria-controls="sidebar-{{ entry.type }}-dialog"
+            data-contact-dialog="sidebar-{{ entry.type }}-dialog"
           {% else %}
             aria-label="{{ entry.type }}"
           {% endif %}
           {% assign link_types = '' %}
 
-          {% unless entry.noblank or entry.type == 'email' %}
+          {% unless entry.noblank or entry.type == 'email' or entry.type == 'phone' or entry.type == 'wechat' %}
             target="_blank"
             {% assign link_types = 'noopener noreferrer' %}
           {% endunless %}
@@ -148,12 +237,14 @@
 </aside>
 <!-- #sidebar -->
 
-{% assign email_contact = site.data.contact | where: 'type', 'email' | first %}
-{% if email_contact %}
+{% assign dialog_contacts = site.data.contact | where_exp: 'entry', "entry.type == 'email' or entry.type == 'phone' or entry.type == 'wechat'" %}
+{% if dialog_contacts.size > 0 %}
   <style>
-    #sidebar-email-dialog {
+    .sidebar-contact-dialog {
       width: 26rem;
       max-width: calc(100% - 2rem);
+      max-height: calc(100dvh - 2rem);
+      overflow-y: auto;
       margin: auto;
       padding: 1.5rem;
       border: 1px solid var(--main-border-color);
@@ -163,43 +254,171 @@
       box-shadow: 0 1rem 3rem rgb(0 0 0 / 20%);
     }
 
-    #sidebar-email-dialog::backdrop {
+    .sidebar-contact-dialog::backdrop {
       background: rgb(0 0 0 / 45%);
     }
 
-    #sidebar-email-dialog ul {
+    .sidebar-contact-dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-contact-dialog-header form {
+      flex: 0 0 auto;
+      margin: 0;
+    }
+
+    .sidebar-contact-close {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      appearance: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .sidebar-contact-close::before {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ff5f57;
+      box-shadow: inset 0 0 0 1px rgb(190 49 43 / 28%);
+      content: '';
+    }
+
+    .sidebar-contact-close span {
+      position: relative;
+      width: 7px;
+      height: 7px;
+      opacity: 0;
+    }
+
+    .sidebar-contact-close span::before,
+    .sidebar-contact-close span::after {
+      position: absolute;
+      top: 3px;
+      left: 0;
+      width: 7px;
+      height: 1px;
+      border-radius: 1px;
+      background: #4b0b08;
+      content: '';
+    }
+
+    .sidebar-contact-close span::before {
+      transform: rotate(45deg);
+    }
+
+    .sidebar-contact-close span::after {
+      transform: rotate(-45deg);
+    }
+
+    .sidebar-contact-close:hover span,
+    .sidebar-contact-close:focus-visible span {
+      opacity: 1;
+    }
+
+    .sidebar-contact-close:active::before {
+      background: #e94b43;
+      box-shadow: inset 0 0 0 1px rgb(157 35 30 / 35%);
+    }
+
+    .sidebar-contact-close:focus-visible {
+      outline: 2px solid var(--link-color);
+      outline-offset: 1px;
+    }
+
+    @media (hover: none) {
+      .sidebar-contact-close {
+        width: 32px;
+        height: 32px;
+      }
+
+      .sidebar-contact-close span {
+        opacity: 1;
+      }
+    }
+
+    .sidebar-wechat-qr {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: calc(100dvh - 10rem);
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+
+    .sidebar-contact-dialog ul {
       overflow-wrap: anywhere;
       user-select: text;
     }
   </style>
 
-  <dialog id="sidebar-email-dialog" aria-labelledby="sidebar-email-title" lang="zh-CN">
-    <h2 id="sidebar-email-title" class="h5 mt-0 mb-3">联系邮箱</h2>
-    <ul class="list-unstyled mb-4">
-      {% for email_address in email_contact.addresses %}
-        <li class="mb-2">{{ email_address | escape }}</li>
-      {% endfor %}
-    </ul>
-    <form method="dialog" class="d-flex justify-content-end">
-      <button type="submit" class="btn btn-outline-secondary btn-sm" autofocus>关闭</button>
-    </form>
-  </dialog>
+  {% for contact in dialog_contacts %}
+    <dialog
+      id="sidebar-{{ contact.type }}-dialog"
+      class="sidebar-contact-dialog"
+      aria-labelledby="sidebar-{{ contact.type }}-title"
+      lang="zh-CN"
+    >
+      <div class="sidebar-contact-dialog-header">
+        <h2 id="sidebar-{{ contact.type }}-title" class="h5 m-0">
+          {% if contact.type == 'email' %}联系邮箱{% elsif contact.type == 'wechat' %}微信二维码{% else %}联系我{% endif %}
+        </h2>
+        <form method="dialog">
+          <button type="submit" class="sidebar-contact-close" aria-label="关闭弹窗" title="关闭" autofocus>
+            <span aria-hidden="true"></span>
+          </button>
+        </form>
+      </div>
+      {% if contact.type == 'wechat' %}
+        <img
+          class="sidebar-wechat-qr"
+          src="{{ contact.url | relative_url }}"
+          alt="王业辰的微信二维码，扫码添加好友"
+          width="820"
+          height="1216"
+        >
+      {% else %}
+        <ul class="list-unstyled mb-0">
+          {% if contact.type == 'email' %}
+            {% for email_address in contact.addresses %}
+              <li class="mb-2">{{ email_address | escape }}</li>
+            {% endfor %}
+          {% else %}
+            <li>电话 {{ contact.number | escape }}</li>
+          {% endif %}
+        </ul>
+      {% endif %}
+    </dialog>
+  {% endfor %}
 
   <script>
     (() => {
-      const trigger = document.getElementById('sidebar-email-trigger');
-      const dialog = document.getElementById('sidebar-email-dialog');
+      document.querySelectorAll('[data-contact-dialog]').forEach((trigger) => {
+        const dialog = document.getElementById(trigger.dataset.contactDialog);
 
-      trigger.addEventListener('click', (event) => {
-        event.preventDefault();
-        if (!dialog.open) dialog.showModal();
-      });
-
-      trigger.addEventListener('keydown', (event) => {
-        if (event.key === ' ') {
+        trigger.addEventListener('click', (event) => {
           event.preventDefault();
-          trigger.click();
-        }
+          if (!dialog.open) dialog.showModal();
+        });
+
+        trigger.addEventListener('keydown', (event) => {
+          if (event.key === ' ') {
+            event.preventDefault();
+            trigger.click();
+          }
+        });
       });
     })();
   </script>

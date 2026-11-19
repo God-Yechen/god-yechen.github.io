@@ -1,8 +1,5 @@
 #  The contact options.
 
-- type: github
-  icon: "fab fa-github"
-
 - type: wechat
   icon: "fab fa-weixin"
   url: "/assets/basic%20photo/wechat.png"
@@ -13,6 +10,14 @@
     - wangyechen7500@126.com
     - gequde1@gmail.com
   noblank: true # open link in current tab
+
+- type: phone
+  icon: "fas fa-phone"
+  number: "+86 13854357500"
+  noblank: true
+
+- type: github
+  icon: "fab fa-github"
 
 # Uncomment and complete the url below to enable more contact options
 #

@@ -1,8 +1,13 @@
 ---
-# the default layout is 'page'
-icon: fas fa-info-circle
-order: 4
+title: 关于我
+icon: fas fa-user
+order: 1
 ---
 
-> Add Markdown syntax content to file `_tabs/about.md`{: .filepath } and it will show up on this page.
-{: .prompt-tip }
+我叫王业辰，专业是机械工程。
+
+这个网站记录我的个人信息、学习与实践，以及各个阶段的经历和思考。
+
+## 发展历程
+
+后续会按时间整理我的求学经历、项目实践和阶段性记录。
