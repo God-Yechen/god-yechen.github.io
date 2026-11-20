@@ -42,23 +42,21 @@ layout: default
           {% endfor %}
         </ol>
       {% else %}
-        {% if section.id == 'competitions' %}<p class="honors-scroll-hint">左右滑动查看完整表格</p>{% endif %}
-        <div class="honors-table-wrapper"{% if section.id == 'competitions' %} tabindex="0" role="region" aria-label="竞赛奖项表格"{% endif %}>
+        <p class="honors-scroll-hint">左右滑动查看完整表格</p>
+        <div class="honors-table-wrapper" tabindex="0" role="region" aria-label="{{ section.title | escape }}表格">
           <table class="honors-table{% if section.id == 'competitions' %} honors-competitions-table{% endif %}">
             <caption class="visually-hidden">{{ section.title | escape }}，按时间从新到旧排列</caption>
             <thead>
               <tr>
-                <th scope="col" aria-sort="descending">
-                  <span class="honors-time-heading">时间<button type="button" class="honors-date-sort" data-honors-sort aria-controls="honors-{{ section.id | escape }}-rows" aria-label="{{ section.title | escape }}：按时间正序排列（最早在前）" title="按时间正序排列（最早在前）"><i class="fas fa-arrow-down-wide-short" aria-hidden="true"></i></button></span>
-                </th>
-                <th scope="col">{{ section.name_label | escape }}</th>
-                {% if section.id == 'competitions' %}<th scope="col">{{ section.award_label | default: '奖项' | escape }}</th>{% endif %}
-                <th scope="col">{{ section.organizer_label | escape }}</th>
+                <th scope="col" aria-sort="descending">{% include honor-sort-heading.html key='date' label='时间' next='时间正序（最早在前）' active=true %}</th>
+                <th scope="col">{% include honor-sort-heading.html key='name' label=section.name_label next='名称正序（拼音 A-Z）' %}</th>
+                {% if section.id == 'competitions' %}<th scope="col">{% include honor-sort-heading.html key='award' label=section.award_label next='奖项由高到低' %}</th>{% endif %}
+                <th scope="col">{% include honor-sort-heading.html key='organizer' label=section.organizer_label next='单位由大到小（国际或全国、省级、学校、学院）' %}</th>
               </tr>
             </thead>
             <tbody id="honors-{{ section.id | escape }}-rows">
               {% for record in records %}
-                <tr data-honors-record data-honors-date="{{ record.date | escape }}">
+                <tr data-honors-record data-honors-date="{{ record.date | escape }}" data-honors-name="{{ record.name | escape }}" data-honors-award="{{ record.award | escape }}" data-honors-organizer="{{ record.organizer | escape }}" data-honors-organizer-order="{{ record.organizer_order | default: 0 }}">
                   <td class="honors-date">{{ record.date | escape }}</td>
                   <td>{% include honor-certificate-link.html record=record %}{% if record.detail %}<span class="honors-record-detail">{{ record.detail | escape }}</span>{% endif %}</td>
                   {% if section.id == 'competitions' %}<td><span class="honors-award">{{ record.award | escape }}</span></td>{% endif %}

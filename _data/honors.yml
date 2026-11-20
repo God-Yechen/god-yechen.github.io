@@ -1,9 +1,11 @@
 # 时间统一写为带引号的 YYYY-MM 或 YYYY-MM-DD，各部分自动按时间从新到旧排列。
 # 学校荣誉填写 date、name、organizer；竞赛奖项另填写 award。
 # 同一比赛、同一等级的不同团队，用 detail 区分。
-# 科研成果填写 date、name、publisher、type、authorship；status 仅在有明确状态时填写。
-# certificates 填写证书图片路径，可放多张；暂无材料时保留 []。
-# 科研条目的日期与状态按提供的信息记录，日期不代表已发表。
+# organizer_order 仅用于页面展示顺序：50国际，40全国，30省级，20学校，10学院。
+# 此字段是本网站的排序约定，不表示单位的法定行政级别。
+# certificates 是预览图片路径；certificate_pdf 是保持原文件字节不变的PDF下载路径。
+# PNG由预览图在下载时导出；暂无材料的条目保留 certificates: []。
+# 科研成果按已有信息记录类型、作者顺序和状态；日期不代表已发表。
 
 - id: "school"
   title: "学校荣誉"
@@ -14,38 +16,56 @@
       name: "国家励志奖学金"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/国家励志奖学金-2024.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/国家励志奖学金-2024.pdf"
     - date: "2024-12"
       name: "校三好学生"
       organizer: "大连海洋大学"
       certificates: ["/assets/certificates/校三好学生-2024.jpg"]
+      organizer_order: 20
+      certificate_pdf: "/assets/certificates/校三好学生-2024.pdf"
     - date: "2024-12"
       name: "校优秀学生干部"
       organizer: "大连海洋大学"
       certificates: ["/assets/certificates/校优秀学生干部-2024.jpg"]
+      organizer_order: 20
+      certificate_pdf: "/assets/certificates/校优秀学生干部-2024.pdf"
     - date: "2025-06"
       name: "校励志成才大学生"
       organizer: "大连海洋大学学生工作委员会"
       certificates: ["/assets/certificates/校励志成才大学生-2025.jpg"]
+      organizer_order: 20
+      certificate_pdf: "/assets/certificates/校励志成才大学生-2025.pdf"
     - date: "2025-11"
       name: "国家励志奖学金"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/国家励志奖学金-2025.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/国家励志奖学金-2025.pdf"
     - date: "2025-11"
       name: "校三好学生"
       organizer: "大连海洋大学"
       certificates: ["/assets/certificates/校三好学生-2025.jpg"]
+      organizer_order: 20
+      certificate_pdf: "/assets/certificates/校三好学生-2025.pdf"
     - date: "2026-06"
       name: "校励志成才大学生"
       organizer: "大连海洋大学学生工作委员会"
       certificates: ["/assets/certificates/校励志成才大学生-2026.jpg"]
+      organizer_order: 20
+      certificate_pdf: "/assets/certificates/校励志成才大学生-2026.pdf"
     - date: "2024-12"
       name: "校二等奖学金"
       organizer: "大连海洋大学"
       certificates: ["/assets/certificates/校二等奖学金-2024.jpg"]
+      organizer_order: 20
+      certificate_pdf: "/assets/certificates/校二等奖学金-2024.pdf"
     - date: "2025-12"
       name: "校二等奖学金"
       organizer: "大连海洋大学"
       certificates: ["/assets/certificates/校二等奖学金-2025.jpg"]
+      organizer_order: 20
+      certificate_pdf: "/assets/certificates/校二等奖学金-2025.pdf"
 
 - id: "competitions"
   title: "竞赛奖项"
@@ -58,103 +78,143 @@
       award: "一等奖"
       organizer: "中国农业机械学会、中国农业工程学会"
       certificates: ["/assets/certificates/第十一届国际大学生智能农业装备创新大赛-2026-一等奖.jpg"]
+      organizer_order: 40
+      certificate_pdf: "/assets/certificates/第十一届国际大学生智能农业装备创新大赛-2026-一等奖.pdf"
     - date: "2025-12"
       name: "第十一届全国大学生物理实验竞赛"
       award: "三等奖"
       organizer: "全国大学生物理实验竞赛（创新）组委会"
       certificates: ["/assets/certificates/第十一届全国大学生物理实验竞赛-2025-三等奖.jpg"]
+      organizer_order: 40
+      certificate_pdf: "/assets/certificates/第十一届全国大学生物理实验竞赛-2025-三等奖.pdf"
     - date: "2026-05"
       name: "美国大学生数学建模大赛"
       award: "H奖"
       organizer: "美国数学及其应用联合会"
       certificates: ["/assets/certificates/美国大学生数学建模大赛-2026-H奖.jpg"]
+      organizer_order: 50
+      certificate_pdf: "/assets/certificates/美国大学生数学建模大赛-2026-H奖.pdf"
     - date: "2025-05"
       name: "第七届国际大学生混凝土龙舟邀请赛"
       award: "三等奖"
       organizer: "海岸与海洋工程全国重点实验室"
       certificates: ["/assets/certificates/第七届国际大学生混凝土龙舟邀请赛-2025-三等奖.jpg"]
+      organizer_order: 40
+      certificate_pdf: "/assets/certificates/第七届国际大学生混凝土龙舟邀请赛-2025-三等奖.pdf"
     - date: "2025-11"
       name: "2025年辽宁省普通高等院校智慧农业创新创业大赛"
       award: "一等奖"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/辽宁省智慧农业创新创业大赛-2025-一等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/辽宁省智慧农业创新创业大赛-2025-一等奖.pdf"
     - date: "2025-11"
       name: "2025年辽宁省普通高等学校“绿意杯”节能环保大学生科技创新大赛"
       award: "一等奖"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/辽宁省绿意杯节能环保大学生科技创新大赛-2025-一等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/辽宁省绿意杯节能环保大学生科技创新大赛-2025-一等奖.pdf"
     - date: "2025-12"
       name: "2025年辽宁省大学生智慧海洋科技创新大赛"
       award: "一等奖"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/辽宁省大学生智慧海洋科技创新大赛-2025-一等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/辽宁省大学生智慧海洋科技创新大赛-2025-一等奖.pdf"
     - date: "2026-07"
       name: "第十六届全国大学生电子商务“创新、创意及创业”挑战赛（辽宁省选拔赛）"
       award: "二等奖"
       organizer: "全国大学生电子商务“创新、创意及创业”挑战赛竞赛组织委员会"
       certificates: ["/assets/certificates/第十六届全国大学生电子商务三创赛辽宁省选拔赛-2026-二等奖-蔚蓝启航.jpg"]
       detail: "团队：蔚蓝启航"
+      organizer_order: 40
+      certificate_pdf: "/assets/certificates/第十六届全国大学生电子商务三创赛辽宁省选拔赛-2026-二等奖-蔚蓝启航.pdf"
     - date: "2025-12"
       name: "2025年第六届辽宁省智能制造科普创意创新大赛"
       award: "二等奖"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/辽宁省第六届智能制造科普创意创新大赛-2025-二等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/辽宁省第六届智能制造科普创意创新大赛-2025-二等奖.pdf"
     - date: "2025-08"
       name: "2025年全国大学生统计建模大赛辽宁赛区"
       award: "二等奖"
       organizer: "中国统计教育学会"
       certificates: ["/assets/certificates/全国大学生统计建模大赛辽宁赛区-2025-二等奖.jpg"]
+      organizer_order: 40
+      certificate_pdf: "/assets/certificates/全国大学生统计建模大赛辽宁赛区-2025-二等奖.pdf"
     - date: "2025-10"
       name: "2025年辽宁省第五届大学生材料微观之美创意大赛"
       award: "二等奖"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/辽宁省第五届大学生材料微观之美创意大赛-2025-二等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/辽宁省第五届大学生材料微观之美创意大赛-2025-二等奖.pdf"
     - date: "2025-07"
       name: "第十五届全国周培源大学生力学竞赛（辽宁省赛区个人赛）"
       award: "三等奖"
       organizer: "辽宁省力学学会"
       certificates: ["/assets/certificates/第十五届全国周培源大学生力学竞赛辽宁省赛区-2025-三等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/第十五届全国周培源大学生力学竞赛辽宁省赛区-2025-三等奖.pdf"
     - date: "2025-12"
       name: "2025年辽宁省普通高等学校本科大学生物理竞赛"
       award: "三等奖"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/辽宁省普通高等学校本科大学生物理竞赛-2025-三等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/辽宁省普通高等学校本科大学生物理竞赛-2025-三等奖.pdf"
     - date: "2025-12"
       name: "2025年第六届辽宁省智能制造科普创意创新大赛"
       award: "三等奖"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/辽宁省第六届智能制造科普创意创新大赛-2025-三等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/辽宁省第六届智能制造科普创意创新大赛-2025-三等奖.pdf"
     - date: "2025-12"
       name: "2025年辽宁省大学生智慧海洋科技创新大赛"
       award: "三等奖"
       organizer: "辽宁省教育厅"
       certificates: ["/assets/certificates/辽宁省大学生智慧海洋科技创新大赛-2025-三等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/辽宁省大学生智慧海洋科技创新大赛-2025-三等奖.pdf"
     - date: "2025-06"
       name: "2025年东北三省数学建模联赛"
       award: "三等奖"
       organizer: "东北三省数学建模联赛委员会"
       certificates: ["/assets/certificates/东北三省数学建模联赛-2025-三等奖.jpg"]
+      organizer_order: 30
+      certificate_pdf: "/assets/certificates/东北三省数学建模联赛-2025-三等奖.pdf"
     - date: "2026-07"
       name: "第十六届全国大学生电子商务“创新、创意及创业”挑战赛（辽宁省选拔赛）"
       award: "二等奖"
       organizer: "全国大学生电子商务“创新、创意及创业”挑战赛竞赛组织委员会"
       detail: "团队：海蛎科创"
       certificates: ["/assets/certificates/第十六届全国大学生电子商务三创赛辽宁省选拔赛-2026-二等奖-海蛎科创.jpg"]
+      organizer_order: 40
+      certificate_pdf: "/assets/certificates/第十六届全国大学生电子商务三创赛辽宁省选拔赛-2026-二等奖-海蛎科创.pdf"
     - date: "2025-08"
       name: "中国国际大学生创新大赛（2025）大连海洋大学校赛"
       award: "校级银奖"
       organizer: "大连海洋大学创新创业学院"
       certificates: ["/assets/certificates/中国国际大学生创新大赛（2025）大连海洋大学校赛-校级银奖.jpg"]
+      organizer_order: 10
+      certificate_pdf: "/assets/certificates/中国国际大学生创新大赛（2025）大连海洋大学校赛-校级银奖.pdf"
     - date: "2025-05"
       name: "2025年大连海洋大学中新合作学院词汇能力大赛"
       award: "一等奖"
       organizer: "大连海洋大学中新合作学院"
       certificates: ["/assets/certificates/中新合作学院词汇能力大赛-2025-一等奖.jpg"]
+      organizer_order: 10
+      certificate_pdf: "/assets/certificates/中新合作学院词汇能力大赛-2025-一等奖.pdf"
     - date: "2025-05"
       name: "2025年大连海洋大学节能减排社会实践与科技竞赛"
       award: "三等奖"
       organizer: "大连海洋大学创新创业学院、海洋与土木工程学院"
       certificates: ["/assets/certificates/大连海洋大学节能减排社会实践与科技竞赛-2025-三等奖.jpg"]
+      organizer_order: 10
+      certificate_pdf: "/assets/certificates/大连海洋大学节能减排社会实践与科技竞赛-2025-三等奖.pdf"
 
 - id: "research"
   title: "科研成果"

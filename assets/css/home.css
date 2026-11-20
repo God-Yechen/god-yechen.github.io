@@ -1061,14 +1061,14 @@ html:has(.honors-certificate-dialog[open]) {
   border: 0 !important;
 }
 
-.honors-time-heading {
+.honors-sort-heading {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   white-space: nowrap;
 }
 
-.honors-date-sort {
+.honors-sort-button {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
@@ -1084,11 +1084,97 @@ html:has(.honors-certificate-dialog[open]) {
   cursor: pointer;
 }
 
-.honors-date-sort:hover {
+.honors-sort-button:hover {
   background: color-mix(in srgb, var(--home-accent) 10%, transparent);
 }
 
-.honors-date-sort:focus-visible {
+.honors-sort-button:focus-visible {
   outline: 2px solid var(--home-accent);
   outline-offset: 2px;
+}
+
+.home-page .content .honors-table {
+  min-width: 32rem;
+}
+
+.home-page .content .honors-competitions-table {
+  min-width: 41rem;
+}
+
+th:not([aria-sort]) .honors-sort-button {
+  color: var(--text-muted-color);
+}
+
+.honors-certificate-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+
+.honors-certificate-actions {
+  display: flex;
+  align-self: end;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.honors-certificate-actions[hidden] {
+  display: none;
+}
+
+.honors-certificate-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.15rem;
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--home-card-border);
+  border-radius: 0.6rem;
+  color: var(--home-accent);
+  background: color-mix(in srgb, var(--home-accent) 5%, var(--home-card-bg));
+  font: inherit;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.honors-certificate-download:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--home-accent) 12%, var(--home-card-bg));
+}
+
+.honors-certificate-download:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.honors-certificate-download:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+}
+
+.honors-certificate-header form {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+#honors-certificate-download-status:not(.visually-hidden) {
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  color: var(--text-color);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .honors-certificate-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .honors-certificate-header form {
+    grid-column: 2;
+  }
+
+  .honors-certificate-actions {
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
 }

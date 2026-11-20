@@ -4,9 +4,14 @@
       <h2 id="honors-certificate-title"></h2>
       <p id="honors-certificate-meta"></p>
     </div>
+    <div class="honors-certificate-actions" aria-label="下载证书" hidden>
+      <button type="button" class="honors-certificate-download" data-certificate-png disabled><i class="far fa-file-image" aria-hidden="true"></i><span>下载 PNG</span></button>
+      <button type="button" class="honors-certificate-download" data-certificate-pdf disabled><i class="far fa-file-pdf" aria-hidden="true"></i><span>下载 PDF</span></button>
+    </div>
     <form method="dialog">
       <button class="honors-certificate-close" type="submit" aria-label="关闭证书窗口" title="关闭" autofocus><span aria-hidden="true"></span></button>
     </form>
   </header>
+  <p id="honors-certificate-download-status" class="visually-hidden" role="status" aria-live="polite"></p>
   <div id="honors-certificate-body" class="honors-certificate-body"></div>
 </dialog>
