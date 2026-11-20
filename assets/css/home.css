@@ -1060,3 +1060,35 @@ html:has(.honors-certificate-dialog[open]) {
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+.honors-time-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+.honors-date-sort {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.4rem;
+  color: var(--home-accent);
+  background: transparent;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.honors-date-sort:hover {
+  background: color-mix(in srgb, var(--home-accent) 10%, transparent);
+}
+
+.honors-date-sort:focus-visible {
+  outline: 2px solid var(--home-accent);
+  outline-offset: 2px;
+}

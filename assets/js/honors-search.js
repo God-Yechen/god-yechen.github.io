@@ -29,6 +29,26 @@
     page.querySelector('#honors-records').hidden = !!query && total === 0;
   }
 
+  function sortTable(button) {
+    const table = button.closest('table');
+    const heading = button.closest('th');
+    const ascending = heading.getAttribute('aria-sort') !== 'ascending';
+    const direction = ascending ? 1 : -1;
+    const rows = [...table.tBodies[0].querySelectorAll('[data-honors-record]')];
+    rows.sort((a, b) => direction * a.dataset.honorsDate.localeCompare(b.dataset.honorsDate));
+    table.tBodies[0].append(...rows);
+    heading.setAttribute('aria-sort', ascending ? 'ascending' : 'descending');
+    const next = ascending ? '按时间倒序排列（最新在前）' : '按时间正序排列（最早在前）';
+    const sectionTitle = table.closest('.honors-section').querySelector('h2').textContent.trim();
+    button.title = next;
+    button.setAttribute('aria-label', sectionTitle + '：' + next);
+    button.querySelector('i').className = ascending ? 'fas fa-arrow-up-wide-short' : 'fas fa-arrow-down-wide-short';
+    const order = ascending ? '从旧到新' : '从新到旧';
+    table.caption.textContent = sectionTitle + '，按时间' + order + '排列';
+    const status = document.getElementById('panel-status');
+    if (status) status.textContent = sectionTitle + '已按时间' + order + '排列';
+  }
+
   function clear(input) {
     input.value = '';
     filter(input);
@@ -42,6 +62,8 @@
   document.addEventListener('input', handleInput);
   document.addEventListener('compositionend', handleInput);
   document.addEventListener('click', event => {
+    const sortButton = event.target.closest('[data-honors-sort]');
+    if (sortButton) sortTable(sortButton);
     const button = event.target.closest('[data-honors-clear]');
     if (button) clear(button.closest('.honors-page').querySelector(selector));
   });
