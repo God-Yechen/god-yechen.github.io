@@ -4,6 +4,12 @@
 {% if jekyll.environment == 'production' %}
 <script defer data-site-updates src="{{ '/assets/js/site-updates.js' | relative_url }}?v={{ site_build_version }}"></script>
 {% endif %}
-<script defer data-panel-navigation src="{{ '/assets/js/panel-navigation.js' | relative_url }}?v={{ site_build_version }}"></script>
+<script defer data-panel-navigation data-private-center-url="{{ '/private-center/' | relative_url }}" src="{{ '/assets/js/panel-navigation.js' | relative_url }}?v={{ site_build_version }}"></script>
 <script defer src="{{ '/assets/js/honors-search.js' | relative_url }}?v={{ site_build_version }}"></script>
 <script defer src="{{ '/assets/js/honors-certificates.js' | relative_url }}?v={{ site_build_version }}"></script>
+
+{% if page.layout == 'private-portal' %}
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="{{ '/assets/css/private-portal.css' | relative_url }}?v={{ site_build_version }}">
+<script defer src="{{ '/assets/js/private-portal.js' | relative_url }}?v={{ site_build_version }}"></script>
+{% endif %}

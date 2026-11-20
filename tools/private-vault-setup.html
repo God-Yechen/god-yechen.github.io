@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-__NONCE__'; style-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'"><title>本机设置私人空间</title><style>
+*{box-sizing:border-box}body{margin:0;background:#eff4f2;color:#233a36;font:16px/1.7 system-ui,sans-serif}main{max-width:640px;margin:6vh auto;padding:36px;background:white;border-radius:24px;box-shadow:0 12px 40px #284c3e0c}h1{font-size:26px;margin:0 0 12px}p{color:#61706c}form{display:grid;gap:12px;margin-top:24px}input,button{font:inherit;padding:12px 16px;border:1px solid #cddad5;border-radius:10px;min-width:0}button{cursor:pointer;background:#f6f9f7;color:#294c43}button.primary{color:white;background:#34746b;border-color:#34746b}button:disabled{opacity:.55;cursor:wait}.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}label{font-weight:600}#status{white-space:pre-wrap;overflow-wrap:anywhere;min-height:48px}.small{font-size:14px}a{color:#34746b}@media(max-width:680px){main{margin:16px;padding:24px}}
+</style></head><body><main><h1>本机设置私人空间</h1><p>自动连接本地网站目录。设置密码并生成加密文件后，会自动验证解锁。</p><button id="choose" type="button" hidden>重新连接本地目录</button><p id="folder" class="small">正在自动连接本地网站目录…</p><form><label for="password">访问密码（至少 8 位，区分大小写）</label><div class="row"><input id="password" type="password" autocomplete="new-password" minlength="8" required spellcheck="false" autocapitalize="off"><button id="show" type="button" aria-pressed="false">显示</button></div><label for="confirm">再次输入密码</label><input id="confirm" type="password" autocomplete="new-password" minlength="8" required spellcheck="false" autocapitalize="off"><button id="save" type="submit" class="primary" disabled>生成加密内容并验证</button></form><p id="status" role="status" aria-live="polite">原文章和证书不会被修改。旧的加密入口文件会先备份。</p><p class="small">密码只在浏览器内使用，不会通过网络发送或写入文件。请自行保存密码。</p></main>
+<script nonce="__NONCE__">
+(() => {
+const allowed=['127.0.0.1','localhost','[::1]'].includes(location.hostname);
+if (allowed && 'serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', event => { if (event.data?.type === 'SITE_VERSION_CHECK') event.ports[0]?.postMessage({managed:true}); });
+const status=document.getElementById('status'),choose=document.getElementById('choose'),save=document.getElementById('save');
+const first=document.getElementById('password'),second=document.getElementById('confirm');
+const utf8=new TextEncoder();let directory=null,source=null;
+const bridgeToken='__BRIDGE_TOKEN__';const bridged=/^[0-9a-f]{64}$/.test(bridgeToken);
+async function localRequest(route,options={}){const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),30000);try{const headers=new Headers(options.headers);headers.set('X-Vault-Token',bridgeToken);const response=await fetch(route,{...options,headers,signal:controller.signal,cache:'no-store'});if(!response.ok){if(response.status===404)throw new DOMException('文件不存在','NotFoundError');const data=await response.json().catch(()=>({}));throw new Error(data.error||'本地助手连接失败。');}return response;}finally{clearTimeout(timeout);}}
+const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const base64=buffer=>{const bytes=new Uint8Array(buffer);let text='';for(let i=0;i<bytes.length;i+=32768)text+=String.fromCharCode(...bytes.subarray(i,i+32768));return btoa(text);};
+async function fileAt(root,parts){const response=await localRequest('/__vault/read?path='+encodeURIComponent(parts.join('/')));return new File([await response.arrayBuffer()],parts.at(-1));}
+async function writeAt(root,parts,bytes){await localRequest('/__vault/write?path='+encodeURIComponent(parts.join('/')),{method:'PUT',headers:{'Content-Type':'application/octet-stream'},body:bytes});}
+function segments(value){const parts=decodeURIComponent(value).replace(/^\//,'').split('/');if(parts.some(part=>!part||part==='.'||part==='..'||part.includes('\\')||part.includes('\0')))throw new Error('附件路径不受支持。');return parts;}
+if(!allowed||!bridged||!crypto.subtle){choose.hidden=true;save.disabled=true;status.textContent='请使用更新后的设置脚本打开本机助手。';return;}
+async function connect(){choose.disabled=true;save.disabled=true;status.textContent='正在连接本地网站目录…';try{const selected={name:'god-yechen.github.io'};const file=await fileAt(selected,['.private-local','vault.json']);const parsed=JSON.parse((await file.text()).replace(/^\uFEFF/,''));if(!Array.isArray(parsed.posts)||!Array.isArray(parsed.honors))throw new Error('私人源文件格式有误。');directory=selected;source=parsed;document.getElementById('folder').textContent='已自动连接 '+selected.name+'，包含 '+source.posts.length+' 篇文章、'+source.honors.reduce((n,s)=>n+(s.records||[]).length,0)+' 项荣誉。';save.disabled=false;choose.hidden=true;status.textContent='请设置密码，大小写与特殊字符均按原样保留。';}catch(error){choose.hidden=false;status.textContent=error.name==='AbortError'?'连接超时，请点击重新连接。':error.message;}finally{choose.disabled=false;}}
+choose.onclick=connect;connect();
+document.getElementById('show').onclick=()=>{const shown=first.type==='password';first.type=second.type=shown?'text':'password';document.getElementById('show').textContent=shown?'隐藏':'显示';document.getElementById('show').setAttribute('aria-pressed',String(shown));};
+document.querySelector('form').onsubmit=async event=>{
+ event.preventDefault();if(!directory||!source||save.disabled)return;
+ let password=first.value;if(password.length<8){status.textContent='密码至少 8 位。';return;}if(password!==second.value){status.textContent='两次密码不一致，请核对大小写和符号。';return;}
+ const popup=window.open('about:blank','wyc-private-setup-preview');
+ if(popup)popup.document.body.textContent='正在生成加密内容，完成后自动打开私人空间。';
+ save.disabled=true;choose.disabled=true;let committed=false;
+ try{
+  const data=structuredClone(source),salt=crypto.getRandomValues(new Uint8Array(32));
+  const passwordBytes=utf8.encode(password);const material=await crypto.subtle.importKey('raw',passwordBytes,'PBKDF2',false,['deriveKey']);passwordBytes.fill(0);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt,iterations:600000},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  let previous=null;try{previous=await (await fileAt(directory,['assets','private-vault','manifest.json'])).arrayBuffer();}catch(error){if(error.name!=='NotFoundError')throw error;}
+  if(previous)await writeAt(directory,['.private-local','backups','manifest-browser-'+Date.now()+'-'+crypto.randomUUID()+'.json'],previous);
+  const protectedFiles=new Map();let count=0;
+  async function protect(value){if(!value)return null;if(protectedFiles.has(value))return protectedFiles.get(value);const pending=(async()=>{const file=await fileAt(directory,segments(value));const extension=file.name.split('.').at(-1).toLowerCase();const type={jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',pdf:'application/pdf'}[extension];if(!type)throw new Error('证书仅支持 JPG、PNG 和 PDF。');const id=crypto.randomUUID(),iv=crypto.getRandomValues(new Uint8Array(12));const bytes=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:utf8.encode('wyc-vault:file:'+id)},key,await file.arrayBuffer());await writeAt(directory,['assets','private-vault','files',id+'.bin'],bytes);status.textContent='正在加密附件：'+(++count)+' 个';return{id,iv:base64(iv),name:file.name,type};})();protectedFiles.set(value,pending);return pending;}
+  for(const section of data.honors){for(const record of section.records||[]){record.certificates=await Promise.all((record.certificates||[]).map(protect));record.certificate_pdf=await protect(record.certificate_pdf);}}
+  const iv=crypto.getRandomValues(new Uint8Array(12));const bytes=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:utf8.encode('wyc-vault:manifest:v1')},key,utf8.encode(JSON.stringify(data)));
+  const envelope={version:1,kdf:'PBKDF2-SHA256',iterations:600000,salt:base64(salt),iv:base64(iv),ciphertext:base64(bytes)};
+  const verified=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData:utf8.encode('wyc-vault:manifest:v1')},key,bytes)));
+  if(!Array.isArray(verified.posts)||!Array.isArray(verified.honors))throw new Error('加密后的内容验证失败。');
+  await writeAt(directory,['assets','private-vault','manifest.json'],JSON.stringify(envelope));committed=true;
+  status.textContent='加密已完成，正在等待本地预览更新…';
+  let current=false;
+  for(let i=0;i<60;i++){try{const r=await fetch('/assets/private-vault/manifest.json?fresh='+crypto.randomUUID(),{cache:'no-store'});if(r.ok&&(await r.json()).ciphertext===envelope.ciphertext){current=true;break;}}catch{}await pause(500);}
+  if(!current)throw new Error('文件已保存，预览服务尚未更新。请稍后打开 /private-center/ 输入密码。');
+  if(!popup||popup.closed){status.textContent='加密与本机验证完成。请打开 http://127.0.0.1:4000/private-center/ 输入刚设置的密码。';return;}
+  const nonce=crypto.randomUUID();const target=new URL('/private-center/',location.origin);target.searchParams.set('_local_setup',nonce);target.searchParams.set('fresh',crypto.randomUUID());popup.location.href=target.href;
+  let sent=false;
+  for(let i=0;i<60;i++){try{if(typeof popup.__wycSetupUnlock==='function'){sent=popup.__wycSetupUnlock(password,nonce);if(sent)break;}}catch{}await pause(500);}
+  password='';first.value=second.value='';
+  if(!sent)throw new Error('文件已保存，请在新窗口输入刚设置的密码完成解锁。');
+  let unlocked=false;
+  for(let i=0;i<60;i++){try{if(popup.document.querySelector('.private-workspace')?.hidden===false){unlocked=true;break;}}catch{}await pause(500);}
+  if(!unlocked)throw new Error('文件已保存，但页面验证未通过。请保留新窗口的提示。');
+  status.textContent='生成并验证成功。私人空间已在新窗口解锁。\n之后可使用刚设置的密码正常访问，密码没有被保存或发送到服务器。';
+ }catch(error){status.textContent=error.message+(committed?'\n原文章与证书源文件保持不变，旧加密入口文件已备份。':'\n尚未替换原加密入口文件。');}
+ finally{password='';first.value=second.value='';first.type=second.type='password';document.getElementById('show').textContent='显示';document.getElementById('show').setAttribute('aria-pressed','false');save.disabled=false;choose.disabled=false;}
+};
+})();
+</script></body></html>

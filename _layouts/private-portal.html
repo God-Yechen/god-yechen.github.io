@@ -1,0 +1,30 @@
+---
+layout: default
+---
+<section class="private-portal" data-private-portal data-vault-manifest="{{ '/assets/private-vault/manifest.json' | relative_url }}">
+  <div class="private-lock-screen">
+    <div class="private-lock-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></svg></div>
+    <h1>留给自己的空间</h1>
+    <p class="private-intro">一些日常，一些心事，还有一路走来的记录。</p>
+    <form class="private-unlock-form">
+      <label for="private-password">访问密码（至少 8 位）</label>
+      <div class="private-password-row"><input id="private-password" type="password" autocomplete="current-password" autocapitalize="off" spellcheck="false" minlength="8" required aria-describedby="private-status"><button type="button" data-vault-show aria-controls="private-password" aria-pressed="false">显示</button></div>
+      <button type="submit" class="private-primary">解锁私人空间</button>
+    </form>
+    <p id="private-status" class="private-status" role="status" aria-live="polite">只有输入正确密码，才能读取这里的内容。</p>
+    <a class="private-return" href="{{ '/' | relative_url }}">回到公开主页</a>
+  </div>
+  <div class="private-workspace" hidden>
+    <header class="private-heading"><div><p class="private-eyebrow">PERSONAL SPACE</p><h1>我的全部记录</h1></div><button type="button" data-vault-lock><i class="fas fa-lock" aria-hidden="true"></i> 锁定</button></header>
+    <nav class="private-view-tabs" aria-label="私人空间栏目">
+      <button type="button" data-vault-view="recent">最近记录</button>
+      <button type="button" data-vault-view="example3">example3 · 私人专栏</button>
+      <button type="button" data-vault-view="honors">荣誉成果</button>
+    </nav>
+    <div class="private-view-content" aria-live="polite"></div>
+  </div>
+  <dialog class="honors-certificate-dialog private-certificate-dialog" aria-label="私人证书预览">
+    <header class="honors-certificate-header"><div><h2 class="private-certificate-title"></h2></div><div class="private-file-actions"></div><form method="dialog"><button class="honors-certificate-close" aria-label="关闭证书窗口"><span aria-hidden="true"></span></button></form></header>
+    <div class="honors-certificate-body"></div>
+  </dialog>
+</section>

@@ -14,10 +14,10 @@ timezone: Asia/Shanghai
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: wyc的博客
+title: 超越的博客
 
 tagline: No amount of money ever bought a second of time
-description: 这是wyc的博客，记录我的机械工程学习经历、个人发展历程和阶段性成果。
+description: 这是超越的博客，记录我的机械工程学习经历、个人发展历程和阶段性成果。
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
@@ -32,7 +32,7 @@ twitter:
 social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
-  name: wyc
+  name: 超越
   email: wangyechen7500@126.com # change to your email address
   fediverse_handle: # fill in your fediverse handle. E.g. "@username@domain.com"
   links:
@@ -215,6 +215,7 @@ compress_html:
     envs: [development]
 
 exclude:
+  - .private-local
   - "*.gem"
   - "*.gemspec"
   - docs

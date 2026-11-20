@@ -1,6 +1,7 @@
 (() => {
   const panel = document.querySelector('main.home-posts');
   const content = document.getElementById('panel-content');
+  const privateCenterUrl = new URL(document.currentScript?.dataset.privateCenterUrl || '/private-center/', location.origin);
   if (!panel || !content) return;
 
   const status = document.getElementById('panel-status');
@@ -285,6 +286,25 @@
       }
     }
   }
+
+  let privateShortcutHeld = false;
+  const resetPrivateShortcut = () => { privateShortcutHeld = false; };
+  document.addEventListener('keydown', event => {
+    const modifier = ['Control', 'Shift', 'Alt'].includes(event.key);
+    if (event.defaultPrevented || !modifier || !event.ctrlKey || !event.shiftKey || !event.altKey || event.metaKey || event.isComposing || event.getModifierState?.('AltGraph')) return;
+    event.preventDefault();
+    if (event.repeat || privateShortcutHeld) return;
+    privateShortcutHeld = true;
+    if (location.pathname === privateCenterUrl.pathname) {
+      document.getElementById('private-password')?.focus({ preventScroll: true });
+      return;
+    }
+    navigate(new URL(privateCenterUrl.href));
+  }, { capture: true });
+  document.addEventListener('keyup', event => {
+    if (!event.ctrlKey || !event.shiftKey || !event.altKey) resetPrivateShortcut();
+  }, { capture: true });
+  window.addEventListener('blur', resetPrivateShortcut);
 
   document.addEventListener('click', event => {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

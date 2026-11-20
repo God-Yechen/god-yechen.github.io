@@ -1,0 +1,12 @@
+{
+  "posts": [
+    {
+      "id": "first-private-note",
+      "title": "写给自己的第一篇记录",
+      "date": "2026-11-20",
+      "category": "example3",
+      "content": "这里可以记录不想公开的生活、心情和经历。\n\n编辑这段文字后，再运行加密脚本并上传更新。"
+    }
+  ],
+  "honors": []
+}

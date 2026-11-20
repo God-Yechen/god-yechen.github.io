@@ -1,0 +1,70 @@
+私人中心快捷键
+打开公开主页并让网页获得焦点，按 Ctrl + Shift + Alt 进入私人中心。
+新入口为 /private-center/，仍需输入密码解锁。
+三个键都按下时触发，无需字母。按住不重复，松开后可再次触发；已在私人中心时将焦点移至密码框。
+旧入口已移除。
+
+推荐：使用本机网页设置（避免终端与网页的输入差异）
+在网站文件夹执行：
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\设置私人空间.ps1 -Browser
+在 Edge 或 Chrome 中打开生成的本机页面。助手自动连接 god-yechen.github.io，不需要选择文件夹。
+输入两遍至少 8 位的密码。大小写严格区分，符号按原样保留。
+点击“生成加密内容并验证”。程序备份旧加密入口、写入新密文，并自动打开私人空间检查解锁。
+文章和证书源文件不修改，密码不会通过网络发送或写入文件。
+备份位于 .private-local/backups，旧密文附件保留。
+本机助手仅绑定 127.0.0.1:4011，使用每次启动生成的连接令牌保护本地读写。密码只在浏览器内用于加密。
+本机助手不会进入正式网站；日常预览仍使用 http://127.0.0.1:4000/private-center/。
+本机助手只负责生成密文。正式网站解锁在浏览器内完成，不依赖助手一直运行。
+如果本机助手连接失效，重新运行上面的命令即可。助手无操作 30 分钟后自动退出。
+
+私人空间（无需注册账号）
+
+访问方式
+公开主页：https://wycnb.top/
+私人入口：https://wycnb.top/private-center/
+私人入口不出现在导航或站点地图中。输入密码后，左侧才出现 example3 和荣誉成果。
+
+第一次启用
+1. 编辑网站文件夹内 .private-local/vault.json。
+   posts 数组是私人文章；每篇填写 id、title、date、category、content。
+   category 填 example3；正文中的换行在 JSON 中写成 \n。
+   honors 数组已经复制了原荣誉记录，原始公开文件没有改动。
+2. 在网站文件夹打开 PowerShell，执行：
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\设置私人空间.ps1
+3. 输入两遍至少 8 个字符的强密码，不要使用姓名、生日或手机号。
+   建议使用密码管理器生成并保存随机长密码。密码不会写入源码、配置或网络请求。
+   每次更新加密内容也需要输入密码；忘记密码只能从本地明文重新加密，网站不能找回。
+4. 本地预览 http://127.0.0.1:4000/private-center/，输入密码查看。
+5. 上传 assets/private-vault 中的加密文件和页面代码，等待 Actions 完成。
+
+更新私人文章
+只编辑 .private-local/vault.json，然后重新执行设置脚本并上传新密文。
+不要把私人文章放进 _posts、_data 或公开 assets。
+.private-local 被 Git 和 Jekyll 同时排除，应自行保存在安全的本地备份中。
+私人附件可放到 .private-local/files，数据中的附件路径填写 /.private-local/files/文件名。
+
+解锁行为
+密码在本地派生 AES-GCM 密钥，文章和证书仅在浏览器内解密。
+密码不缓存；刷新页面、离开私人区、点击锁定或 15 分钟未操作后需要重新解锁。
+知道密码的人也能解锁；这不是实名账号验证。请只由自己保存密码。
+密文可被下载并离线猜密码，因此必须使用强密码；此方案不能在服务端限制尝试次数。
+重新设置密码不会收回别人下载过的旧密文；如果旧密码泄露，必须处理旧密文和公开历史。
+
+旧公开证书
+此版本仅增加加密私人区，没有删除 /honors/、公开证书文件或 GitHub 的历史提交。
+将旧材料复制到私人区，不会让以前的公开链接失效。
+如果需要旧证书也不再公开，必须先备份，再处理公开文件、Git 历史、仓库副本和部署产物。
+已经被他人下载的副本无法收回。完成清理前，不要认为旧证书已经私密。
+
+维护说明
+加密器：tools/private-vault.mjs；页面：_layouts/private-portal.html。
+前端：assets/js/private-portal.js；样式：assets/css/private-portal.css。
+输出：assets/private-vault/manifest.json 和 files/*.bin，只有密文与必要的加密参数。
+多次加密会使用新盐和随机 IV，旧密文附件先保留，避免正在使用旧版本的页面失效。
+
+解锁失败时的本机验证（不覆盖或重新加密文件）
+在网站文件夹执行：
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\设置私人空间.ps1 -Verify
+输入你原来设置的密码。只会显示是否匹配和记录数量，不输出密码或正文。
+验证通过而网页仍失败时，重新打开带新查询参数的本地私人入口再试。
+验证不通过时，需要确认原密码；确认忘记后可用原设置命令重新加密。

@@ -1,0 +1,37 @@
+.private-portal { min-height: 24rem; }
+.private-portal [hidden] { display: none !important; }
+.private-lock-screen { max-width: 28rem; margin: 1.5rem auto; padding: 1rem; text-align: center; }
+.private-lock-icon { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; margin: 0 auto 1.25rem; border-radius: 1rem; color: #34746b; background: #e9f2ef; font-size: 1.4rem; }
+.private-portal h1 { font-size: clamp(1.5rem, 4vw, 1.9rem); margin: 0 0 1rem; }
+.private-intro, .private-status, .private-eyebrow { color: var(--text-muted-color, #6c757d); }
+.private-unlock-form { text-align: left; margin: 1.8rem 0 1rem; display: grid; gap: .7rem; }
+.private-portal input { width: 100%; min-width: 0; border: 1px solid var(--main-border-color, #d8e3e0); border-radius: .7rem; background: var(--card-bg, #fff); color: inherit; padding: .8rem 1rem; font-size: 1rem; }
+.private-portal button { border: 1px solid var(--main-border-color, #d8e3e0); border-radius: .65rem; padding: .6rem 1rem; background: var(--card-bg, #fff); color: inherit; font-size: 1rem; cursor: pointer; }
+.private-portal button:disabled { cursor: wait; opacity: .6; }
+.private-portal .private-primary { color: white; background: #34746b; border-color: #34746b; padding: .85rem; }
+.private-status { min-height: 3rem; font-size: .9rem; }
+.private-return { font-size: .9rem; }
+.private-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--main-border-color, #e6ebea); }
+.private-heading h1 { margin-bottom: 0; }
+.private-eyebrow { font-size: .8rem; letter-spacing: .15em; margin: 0 0 .4rem; }
+.private-view-tabs { display: flex; gap: .55rem; flex-wrap: wrap; margin: 1.25rem 0; }
+.private-view-tabs button[aria-current="page"] { border-color: #34746b; color: #34746b; background: #e9f2ef; }
+.private-view-content { min-height: 16rem; }
+.private-record { padding: 1.25rem 0; border-bottom: 1px solid var(--main-border-color, #e6ebea); }
+.private-record h2 { font-size: 1.2rem; margin: .5rem 0; }
+.private-record time { font-size: .9rem; color: var(--text-muted-color, #6c757d); }
+.private-record-body { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.9; }
+.private-empty { padding: 4rem 1rem; text-align: center; color: var(--text-muted-color, #6c757d); }
+.private-table-wrap { overflow-x: auto; }
+.private-table { width: 100%; min-width: 36rem; font-size: 1rem; }
+.private-table th, .private-table td { padding: .9rem .6rem; border-bottom: 1px solid var(--main-border-color, #e6ebea); }
+.private-table button { padding: 0; border: 0; text-align: left; color: #34746b; background: transparent; }
+.private-file-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-right: 1.5rem; }
+.private-certificate-dialog iframe { width: 100%; height: 65vh; border: 0; }
+.private-portal :focus-visible { outline: 3px solid #82b5ad; outline-offset: 3px; }
+@media (max-width: 480px) { .private-lock-screen { padding: .5rem; } .private-heading { align-items: flex-start; } .private-view-tabs button { font-size: .9rem; padding: .5rem .7rem; } }
+
+.private-password-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; }
+
+.private-portal { min-width: 0; }
+.private-record h2 { overflow-wrap: anywhere; }
