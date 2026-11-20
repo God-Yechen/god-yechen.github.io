@@ -1,0 +1,5 @@
+---
+layout: null
+sitemap: false
+---
+{"version":"{{ site.time | date: '%s' }}"}

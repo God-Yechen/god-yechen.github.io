@@ -1,4 +1,9 @@
-<link rel="stylesheet" href="{{ '/assets/css/home.css' | relative_url }}">
-<script defer data-panel-navigation src="{{ '/assets/js/panel-navigation.js' | relative_url }}"></script>
-<script defer src="{{ '/assets/js/honors-search.js' | relative_url }}"></script>
-<script defer src="{{ '/assets/js/honors-certificates.js' | relative_url }}"></script>
+{% assign site_build_version = site.time | date: '%s' %}
+<meta name="site-version" content="{{ site_build_version }}">
+<link rel="stylesheet" href="{{ '/assets/css/home.css' | relative_url }}?v={{ site_build_version }}">
+{% if jekyll.environment == 'production' %}
+<script defer data-site-updates src="{{ '/assets/js/site-updates.js' | relative_url }}?v={{ site_build_version }}"></script>
+{% endif %}
+<script defer data-panel-navigation src="{{ '/assets/js/panel-navigation.js' | relative_url }}?v={{ site_build_version }}"></script>
+<script defer src="{{ '/assets/js/honors-search.js' | relative_url }}?v={{ site_build_version }}"></script>
+<script defer src="{{ '/assets/js/honors-certificates.js' | relative_url }}?v={{ site_build_version }}"></script>

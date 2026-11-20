@@ -70,7 +70,7 @@
 
     for (const script of page.head.querySelectorAll('script[src]')) {
       const source = new URL(script.getAttribute('src'), url);
-      if (script.hasAttribute('data-panel-navigation') ||
+      if (script.hasAttribute('data-panel-navigation') || script.hasAttribute('data-site-updates') ||
           source.pathname.includes('/assets/js/dist/') ||
           source.pathname.endsWith('/app.min.js') ||
           source.pathname.endsWith('/livereload.js')) continue;
@@ -227,7 +227,7 @@
     }, 15000);
 
     try {
-      const response = await fetch(url.href, { signal: request.signal });
+      const response = await fetch(url.href, { signal: request.signal, cache: 'no-store' });
       if (!response.ok) throw new Error('Page request failed.');
       const anchor = url.hash;
       url = new URL(response.url);
@@ -237,6 +237,16 @@
       const incoming = page.getElementById('panel-content');
       const incomingPanel = page.querySelector('main.home-posts');
       if (!incoming || !incomingPanel) throw new Error('Page has no shared content panel.');
+      const currentBuild = document.querySelector('meta[name="site-version"]')?.content;
+      const incomingBuild = page.querySelector('meta[name="site-version"]')?.content;
+      if (currentBuild && incomingBuild && currentBuild !== incomingBuild) {
+        const fresh = new URL(url.href);
+        fresh.searchParams.set('_site_v', incomingBuild);
+        fresh.searchParams.set('_site_r', String(Date.now()));
+        clearTimeout(deadline);
+        location.replace(fresh.href);
+        return;
+      }
       await loadDependencies(page, url);
       if (current !== revision) return;
 
