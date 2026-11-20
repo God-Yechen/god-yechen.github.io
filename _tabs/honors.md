@@ -1,4 +1,5 @@
 ---
+nav: false
 layout: honors
 title: 荣誉成果
 icon: fas fa-award
