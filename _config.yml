@@ -216,6 +216,9 @@ compress_html:
 
 exclude:
   - .private-local
+  - assets/certificates
+  - _data/honors.yml
+  - _tabs/honors.md
   - "*.gem"
   - "*.gemspec"
   - docs

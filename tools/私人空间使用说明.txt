@@ -51,10 +51,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\设置私人空间.p
 重新设置密码不会收回别人下载过的旧密文；如果旧密码泄露，必须处理旧密文和公开历史。
 
 旧公开证书
-此版本仅增加加密私人区，没有删除 /honors/、公开证书文件或 GitHub 的历史提交。
-将旧材料复制到私人区，不会让以前的公开链接失效。
-如果需要旧证书也不再公开，必须先备份，再处理公开文件、Git 历史、仓库副本和部署产物。
-已经被他人下载的副本无法收回。完成清理前，不要认为旧证书已经私密。
+旧荣誉网页 /honors/ 与原证书目录 assets/certificates 已下线，当前公开分支不再保留原始证书和荣誉数据。
+原始证书在 .private-local/files/certificates；旧数据和页面在 .private-local/legacy。
+私人源文件中的 58 个附件引用已更新，文章和荣誉内容不变，现有加密包不变。
+这些本地私有文件已被 Git 和 Jekyll 排除，请自行安全备份。
+Git 历史提交和已经被下载的旧副本尚未处理；下线当前网址不能撤回历史副本。
 
 维护说明
 加密器：tools/private-vault.mjs；页面：_layouts/private-portal.html。

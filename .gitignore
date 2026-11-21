@@ -34,3 +34,8 @@ Thumbs.db
 
 # Local cleartext private notes and encryption staging
 .private-local/
+
+# Raw personal certificates and the retired public honor page
+assets/certificates/
+_data/honors.yml
+_tabs/honors.md

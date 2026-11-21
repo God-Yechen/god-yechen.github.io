@@ -115,7 +115,7 @@ async function main() {
   if (action === 'init') { await initialize(); console.log('请编辑 .private-local/vault.json；这个文件不会上传到 GitHub。'); return; }
   if (action === 'import-honors') {
     await initialize();
-    const result = spawnSync('C:/Ruby34-x64/bin/ruby.exe', ['-ryaml', '-rjson', '-e', 'puts JSON.generate(YAML.load_file(ARGV[0]))', path.join(repo, '_data/honors.yml')], { encoding: 'utf8', windowsHide: true });
+    const result = spawnSync('C:/Ruby34-x64/bin/ruby.exe', ['-ryaml', '-rjson', '-e', 'puts JSON.generate(YAML.load_file(ARGV[0]))', path.join(repo, '.private-local/legacy/honors.yml')], { encoding: 'utf8', windowsHide: true });
     if (result.status !== 0) throw new Error('未能读取原荣誉数据：' + result.stderr);
     const data = JSON.parse(await readFile(input, 'utf8'));
     if (data.honors.length) throw new Error('本地已有荣誉数据，未覆盖。');
