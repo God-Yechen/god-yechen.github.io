@@ -42,3 +42,36 @@
 @media(max-width:600px) { .personal-muted { margin-left:0; } .personal-page .personal-heading h1 { font-size:1.5rem; } }
 
 @media(max-width:600px) { .travel-map { min-width:1000px; } }
+
+#sidebar .shortcut-icon { display:block; width:18px; height:18px; flex-shrink:0; }
+@media (max-width:767px) {
+  body.home-page { padding-bottom:calc(92px + env(safe-area-inset-bottom, 0px)); }
+  .home-page #sidebar .sidebar-bottom {
+    display:grid !important;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    position:fixed; inset:auto 10px 10px; bottom:calc(10px + env(safe-area-inset-bottom, 0px));
+    width:auto !important; height:auto; margin:0 !important;
+    gap:4px; padding:6px; z-index:1040;
+    border:1px solid var(--home-card-border); border-radius:20px;
+    background:var(--home-card-bg); box-shadow:0 4px 24px rgb(25 45 36 / 14%);
+  }
+  .home-page #sidebar .sidebar-bottom > .btn-group,
+  .home-page #sidebar .sidebar-bottom > .icon-border { display:none !important; }
+  .home-page #sidebar .sidebar-bottom > .personal-shortcut {
+    display:flex !important; flex-direction:column; align-items:center; justify-content:center;
+    gap:5px; width:100%; height:58px; min-width:0; margin:0 !important;
+    padding:6px 2px; border:0; border-radius:14px; color:var(--text-color);
+    background:transparent; text-decoration:none; touch-action:manipulation;
+  }
+  #sidebar .personal-shortcut::after,
+  #sidebar .personal-shortcut:hover::after,
+  #sidebar .personal-shortcut:focus-visible::after {
+    position:static; opacity:1; visibility:visible; transform:none;
+    background:none; color:inherit; padding:0; border-radius:0;
+    font:11px/1.4 sans-serif; pointer-events:none;
+  }
+  #sidebar .shortcut-icon { width:22px; height:22px; }
+  .home-page #sidebar .personal-shortcut:active,
+  .home-page #sidebar .personal-shortcut[aria-current="page"] { background:rgb(96 153 123 / 13%); color:var(--home-accent); }
+  .home-page #back-to-top { bottom:calc(94px + env(safe-area-inset-bottom, 0px)); }
+}
