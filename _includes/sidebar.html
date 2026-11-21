@@ -2,7 +2,7 @@
 
 <aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end">
   <header class="profile-wrapper">
-    <a href="{{ '/' | relative_url }}" id="avatar" class="rounded-circle">
+    <a href="{{ site.avatar | relative_url }}" id="avatar" class="rounded-circle" role="button" aria-haspopup="dialog" aria-controls="avatar-preview-dialog" aria-label="查看完整头像" title="点击查看头像">
       {%- if site.avatar != empty and site.avatar -%}
         {%- capture avatar_url -%}
           {% include media-url.html src=site.avatar %}
@@ -236,6 +236,28 @@
   <!-- .sidebar-bottom -->
 </aside>
 <!-- #sidebar -->
+<dialog id="avatar-preview-dialog" class="sidebar-avatar-dialog" aria-labelledby="avatar-preview-title">
+  <header><h2 id="avatar-preview-title">头像预览</h2><form method="dialog"><button class="sidebar-contact-close" type="submit" aria-label="关闭头像预览"><span aria-hidden="true"></span></button></form></header>
+  <img src="{{ avatar_url | strip }}" alt="{{ site.social.name | escape }}的头像">
+</dialog>
+<script>
+(() => {
+  const trigger = document.getElementById('avatar');
+  const dialog = document.getElementById('avatar-preview-dialog');
+  trigger.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button > 0) return;
+    event.preventDefault();
+    if (!dialog.open) dialog.showModal();
+  });
+  trigger.addEventListener('keydown', event => {
+    if (event.key === ' ') { event.preventDefault(); trigger.click(); }
+  });
+  dialog.addEventListener('click', event => {
+    const bounds = dialog.getBoundingClientRect();
+    if (event.target === dialog && (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom)) dialog.close();
+  });
+})();
+</script>
 
 {% assign dialog_contacts = site.data.contact | where_exp: 'entry', "entry.type == 'email' or entry.type == 'phone' or entry.type == 'wechat'" %}
 {% if dialog_contacts.size > 0 %}
