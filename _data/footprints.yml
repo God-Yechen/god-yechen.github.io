@@ -1,0 +1,138 @@
+# cities 只填写你真正去过的城市，例如 cities: [青岛, 烟台]。空数组表示暂未记录。
+provinces:
+  - code: 110000
+    name: 北京市
+    capital: 北京
+    cities: []
+  - code: 120000
+    name: 天津市
+    capital: 天津
+    cities: []
+  - code: 130000
+    name: 河北省
+    capital: 石家庄
+    cities: []
+  - code: 140000
+    name: 山西省
+    capital: 太原
+    cities: []
+  - code: 150000
+    name: 内蒙古自治区
+    capital: 呼和浩特
+    cities: []
+  - code: 210000
+    name: 辽宁省
+    capital: 沈阳
+    cities: []
+  - code: 220000
+    name: 吉林省
+    capital: 长春
+    cities: []
+  - code: 230000
+    name: 黑龙江省
+    capital: 哈尔滨
+    cities: []
+  - code: 310000
+    name: 上海市
+    capital: 上海
+    cities: []
+  - code: 320000
+    name: 江苏省
+    capital: 南京
+    cities: []
+  - code: 330000
+    name: 浙江省
+    capital: 杭州
+    cities: []
+  - code: 340000
+    name: 安徽省
+    capital: 合肥
+    cities: []
+  - code: 350000
+    name: 福建省
+    capital: 福州
+    cities: []
+  - code: 360000
+    name: 江西省
+    capital: 南昌
+    cities: []
+  - code: 370000
+    name: 山东省
+    capital: 济南
+    cities: []
+  - code: 410000
+    name: 河南省
+    capital: 郑州
+    cities: []
+  - code: 420000
+    name: 湖北省
+    capital: 武汉
+    cities: []
+  - code: 430000
+    name: 湖南省
+    capital: 长沙
+    cities: []
+  - code: 440000
+    name: 广东省
+    capital: 广州
+    cities: []
+  - code: 450000
+    name: 广西壮族自治区
+    capital: 南宁
+    cities: []
+  - code: 460000
+    name: 海南省
+    capital: 海口
+    cities: []
+  - code: 500000
+    name: 重庆市
+    capital: 重庆
+    cities: []
+  - code: 510000
+    name: 四川省
+    capital: 成都
+    cities: []
+  - code: 520000
+    name: 贵州省
+    capital: 贵阳
+    cities: []
+  - code: 530000
+    name: 云南省
+    capital: 昆明
+    cities: []
+  - code: 540000
+    name: 西藏自治区
+    capital: 拉萨
+    cities: []
+  - code: 610000
+    name: 陕西省
+    capital: 西安
+    cities: []
+  - code: 620000
+    name: 甘肃省
+    capital: 兰州
+    cities: []
+  - code: 630000
+    name: 青海省
+    capital: 西宁
+    cities: []
+  - code: 640000
+    name: 宁夏回族自治区
+    capital: 银川
+    cities: []
+  - code: 650000
+    name: 新疆维吾尔自治区
+    capital: 乌鲁木齐
+    cities: []
+  - code: 710000
+    name: 台湾省
+    capital: 台北
+    cities: []
+  - code: 810000
+    name: 香港特别行政区
+    capital: 香港
+    cities: []
+  - code: 820000
+    name: 澳门特别行政区
+    capital: 澳门
+    cities: []

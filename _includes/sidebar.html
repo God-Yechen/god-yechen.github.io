@@ -203,6 +203,8 @@
       {% if url %}
         <a
           href="{{ url }}"
+          class="personal-shortcut" data-tooltip="{{ entry.label | default: entry.type | escape }}"
+          {% if entry.type == 'menu' %}role="button" aria-haspopup="dialog" aria-controls="personal-menu-dialog" data-personal-menu{% endif %}
           {% if entry.type == 'email' or entry.type == 'phone' or entry.type == 'wechat' %}
             id="sidebar-{{ entry.type }}-trigger"
             role="button"
@@ -211,7 +213,7 @@
             aria-controls="sidebar-{{ entry.type }}-dialog"
             data-contact-dialog="sidebar-{{ entry.type }}-dialog"
           {% else %}
-            aria-label="{{ entry.type }}"
+            aria-label="{{ entry.label | default: entry.type | escape }}"
           {% endif %}
           {% assign link_types = '' %}
 
@@ -445,3 +447,8 @@
     })();
   </script>
 {% endif %}
+
+<dialog id="personal-menu-dialog" class="sidebar-contact-dialog" aria-labelledby="personal-menu-title">
+  <header><h2 id="personal-menu-title">菜单</h2><form method="dialog"><button type="submit" class="sidebar-contact-close" aria-label="关闭菜单"><span aria-hidden="true"></span></button></form></header>
+  <p>这里先留个位置，下一份小惊喜正在路上。</p>
+</dialog>

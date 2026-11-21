@@ -1,6 +1,23 @@
 # Public contact entry.
 - type: email
+  label: 邮箱
   icon: "fas fa-envelope"
   addresses:
     - gequde1@gmail.com
+  noblank: true
+
+- type: footprints
+  label: 我的足迹
+  icon: "fas fa-map-marked-alt"
+  url: /footprints/
+  noblank: true
+- type: bucket-list
+  label: 人生清单
+  icon: "fas fa-list-check"
+  url: /bucket-list/
+  noblank: true
+- type: menu
+  label: 菜单按钮
+  icon: "fas fa-bars"
+  url: "#personal-menu-dialog"
   noblank: true

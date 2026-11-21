@@ -1,0 +1,6 @@
+# 每项填写 title 和 completed；completed 为 true 表示已完成，false 表示未完成。
+# 例如：
+# items:
+#   - title: 写下你想做的一件事
+#     completed: false
+items: []

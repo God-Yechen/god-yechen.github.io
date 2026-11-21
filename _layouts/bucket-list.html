@@ -1,0 +1,12 @@
+---
+layout: default
+---
+<section class="personal-page">
+  <header class="personal-heading"><span class="personal-eyebrow">ONE THING AT A TIME</span><h1>人生清单</h1><p>有些事不必急着完成，记下来，就已经开始了。</p></header>
+  {% assign items = site.data.bucket_list.items %}{% assign completed = items | where: 'completed', true %}
+  <div class="personal-summary"><span><strong>{{ items.size }}</strong> 件想做的事</span><span><strong>{{ completed.size }}</strong> 件已完成</span></div>
+  <div class="life-list-wrap"><table class="life-list"><thead><tr><th scope="col">清单</th><th scope="col">完成状态</th></tr></thead><tbody>
+    {% for item in items %}<tr><td>{{ item.title | escape }}</td><td><span class="life-status {% if item.completed %}is-complete{% endif %}">{% if item.completed %}已完成{% else %}未完成{% endif %}</span></td></tr>
+    {% else %}<tr><td colspan="2" class="life-empty">清单还是空白的，慢慢写下想做的事吧。</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>

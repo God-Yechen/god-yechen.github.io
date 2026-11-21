@@ -1,0 +1,12 @@
+---
+layout: default
+---
+<section class="personal-page" data-footprints data-map-url="{{ '/assets/data/china-provinces.json' | relative_url }}">
+  <header class="personal-heading"><span class="personal-eyebrow">ON THE ROAD</span><h1>我的足迹</h1><p>山海之间，慢慢走，把去过的地方留在这里。</p></header>
+  <div class="personal-summary"><span><strong data-city-count>0</strong> 个城市</span><span><strong data-province-count>0</strong> 个省级地区</span><span class="personal-muted">足迹待补充</span></div>
+  <p class="map-help">圆点标记省会、首府及直辖市／特别行政区驻地。点击省份或侧边标注，可查看去过的城市；窄屏可左右滑动地图。</p>
+  <div class="travel-map-scroll" tabindex="0" role="region" aria-label="中国足迹地图，可左右滚动"><div class="travel-map" aria-busy="true"><p class="map-loading" role="status">正在展开地图……</p></div></div>
+  <p class="map-selection" aria-live="polite">还没有添加城市，先把下一次出发留给未来。</p>
+  <p class="map-credit">区划底图：<a href="https://datav.aliyun.com/portal/school/atlas/area_selector" target="_blank" rel="noopener noreferrer">DataV.GeoAtlas</a>。仅用于个人足迹展示。</p>
+  <script type="application/json" data-footprints-data>{{ site.data.footprints.provinces | jsonify }}</script>
+</section>

@@ -1,0 +1,14 @@
+我的足迹：编辑 _data/footprints.yml，在对应省份的 cities 中填写真正去过的城市。
+例如 cities: [青岛, 烟台]。未去过／未补充时保持 cities: []。
+省份名称、code、capital 请保留。城市会显示在地图侧边，点开可看完整列表。
+
+人生清单：编辑 _data/bucket_list.yml，把 items: [] 替换为：
+items:
+  - title: 你想完成的一件事
+    completed: false
+  - title: 另一件已经完成的事
+    completed: true
+
+注意缩进用空格。保存后本地预览，确认无误再提交到 GitHub。
+这些数据会公开展示，请不要填写只想自己看的私人内容。
+菜单按钮目前只显示占位小窗，之后可接入新功能。
