@@ -1198,3 +1198,8 @@ th:not([aria-sort]) .honors-sort-button {
 .sidebar-avatar-dialog form { margin: 0; }
 .sidebar-avatar-dialog img { display: block; width: 100%; height: auto; max-height: calc(92dvh - 5rem); object-fit: contain; background: white; }
 
+
+/* Indent narrative paragraphs without moving photos, captions, or quotations. */
+article > .content > p.prose-paragraph {
+  text-indent: 2em;
+}
