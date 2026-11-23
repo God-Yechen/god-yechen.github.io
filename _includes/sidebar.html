@@ -2,6 +2,7 @@
 
 <aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end">
   <header class="profile-wrapper">
+    <div class="profile-avatar">
     <a href="{{ site.avatar | relative_url }}" id="avatar" class="rounded-circle" role="button" aria-haspopup="dialog" aria-controls="avatar-preview-dialog" aria-label="查看完整头像" title="点击查看头像">
       {%- if site.avatar != empty and site.avatar -%}
         {%- capture avatar_url -%}
@@ -10,6 +11,8 @@
         <img src="{{- avatar_url -}}" width="112" height="112" alt="avatar" onerror="this.style.display='none'">
       {%- endif -%}
     </a>
+    <p class="avatar-caption">喜欢吗</p>
+    </div>
 
     <a class="site-title d-block" href="{{ '/' | relative_url }}">{{ site.title }}</a>
     <p class="site-subtitle fst-italic mb-0">{{ site.tagline }}</p>
@@ -416,7 +419,7 @@
         <img
           class="sidebar-wechat-qr"
           src="{{ contact.url | relative_url }}"
-          alt="超越的微信二维码，扫码添加好友"
+          alt="奶龙的微信二维码，扫码添加好友"
           width="820"
           height="1216"
         >

@@ -1197,3 +1197,16 @@ th:not([aria-sort]) .honors-sort-button {
 .sidebar-avatar-dialog h2 { margin: 0; font-size: 1.1rem; }
 .sidebar-avatar-dialog form { margin: 0; }
 .sidebar-avatar-dialog img { display: block; width: 100%; height: auto; max-height: calc(92dvh - 5rem); object-fit: contain; background: white; }
+
+/* Keep the avatar caption attached to the portrait, with breathing room above the name. */
+.home-page #sidebar .profile-avatar { margin-bottom:1.5rem; }
+.home-page #sidebar .profile-avatar #avatar { margin-bottom:0; }
+.home-page #sidebar .avatar-caption { margin:1rem 0 0; font-size:.75rem; line-height:1.5; color:var(--text-muted-color); letter-spacing:.08em; }
+@media (max-width:767px) {
+  .home-page #sidebar .profile-wrapper { column-gap:1.5rem; }
+  .home-page #sidebar .profile-avatar { grid-column:1; grid-row:1 / span 2; margin-bottom:0; text-align:center; }
+  .home-page #sidebar .profile-avatar #avatar { grid-row:auto; }
+  .home-page #sidebar .avatar-caption { margin-top:.85rem; font-size:.7rem; }
+  .home-page #sidebar .profile-wrapper > .site-title { grid-column:2; grid-row:1; align-self:end; }
+  .home-page #sidebar .profile-wrapper > .site-subtitle { grid-column:2; grid-row:2; align-self:start; }
+}
