@@ -16,6 +16,8 @@ toc: false
 那时，我的计划是准备雅思，争取在大四阶段去新西兰交流学习。按照当时交流项目的要求，我需要在大学前三年取得雅思总分6.0的成绩，因此也开始有意识地为考试做准备。相比于一条还不存在的升学路径，出国交流是我当时更明确的目标。
 {: .prose-paragraph }
 
+![大连海边的暮色](/assets/img/posts/2026-11-25-recommendation-memoir-01-wait-and-see/dalian-dusk.jpg)
+
 转折发生在大二上学期刚开学的时候。学校给了学院两个推免名额，面向当时已经大四的2021级学长学姐。
 {: .prose-paragraph }
 
@@ -24,6 +26,8 @@ toc: false
 
 直到九月下旬，得知两位学长学姐分别去了山东大学威海校区和中国农业大学，我才第一次真切地受到触动。此前，保研对我来说只是一个新出现的名词；看到他们的去向后，我才意识到，这个机会真的有可能让我们从一所普通本科院校，走向原本觉得有些遥远的平台。
 {: .prose-paragraph }
+
+![大连海边的礁石](/assets/img/posts/2026-11-25-recommendation-memoir-01-wait-and-see/dalian-coast.jpg)
 
 也是从那时起，我开始认真想：这条路，自己有没有可能走一走？
 {: .prose-paragraph }
@@ -35,4 +39,9 @@ toc: false
 {: .prose-paragraph }
 
 所以，慎重考虑之后，我没有立刻转向保研，而是决定先保持观望。这条路已经进入了我的视野，但当时的我，还不知道自己究竟有没有机会走上去。
+{: .prose-paragraph }
+
+![大连跨海大桥夜景](/assets/img/posts/2026-11-25-recommendation-memoir-01-wait-and-see/dalian-bridge-night.jpg)
+
+写在最后：别的不说，大连挺美
 {: .prose-paragraph }
