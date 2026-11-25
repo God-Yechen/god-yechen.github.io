@@ -14,8 +14,6 @@
 .private-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--main-border-color, #e6ebea); }
 .private-heading h1 { margin-bottom: 0; }
 .private-eyebrow { font-size: .8rem; letter-spacing: .15em; margin: 0 0 .4rem; }
-.private-view-tabs { display: flex; gap: .55rem; flex-wrap: wrap; margin: 1.25rem 0; }
-.private-view-tabs button[aria-current="page"] { border-color: #34746b; color: #34746b; background: #e9f2ef; }
 .private-view-content { min-height: 16rem; }
 .private-record { padding: 1.25rem 0; border-bottom: 1px solid var(--main-border-color, #e6ebea); }
 .private-record h2 { font-size: 1.2rem; margin: .5rem 0; }
@@ -29,9 +27,12 @@
 .private-file-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-right: 1.5rem; }
 .private-certificate-dialog iframe { width: 100%; height: 65vh; border: 0; }
 .private-portal :focus-visible { outline: 3px solid #82b5ad; outline-offset: 3px; }
-@media (max-width: 480px) { .private-lock-screen { padding: .5rem; } .private-heading { align-items: flex-start; } .private-view-tabs button { font-size: .9rem; padding: .5rem .7rem; } }
+@media (max-width: 480px) { .private-lock-screen { padding: .5rem; } .private-heading { align-items: flex-start; } }
 
 .private-password-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; }
 
 .private-portal { min-width: 0; }
 .private-record h2 { overflow-wrap: anywhere; }
+
+.private-view-content { padding-top:1.25rem; }
+#sidebar [data-private-navigation] a[aria-current="page"] { color:var(--sidebar-active-color); font-weight:600; }

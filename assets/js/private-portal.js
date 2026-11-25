@@ -53,10 +53,13 @@
     const subnav = document.getElementById('sidebar-category-links');
     const item = node('li');
     item.dataset.privateNavigation = '';
-    const link = node('a', '', 'example3 · 私人专栏');
+    const link = node('a', '', '私人专栏');
     link.href = '#example3'; link.dataset.vaultView = 'example3';
     item.append(link); subnav?.append(item);
     const list = document.querySelector('#sidebar nav > ul');
+    const recentItem = node('li', 'nav-item'); recentItem.dataset.privateNavigation = '';
+    const recentLink = node('a', 'nav-link'); recentLink.href = '#recent'; recentLink.dataset.vaultView = 'recent';
+    recentLink.append(node('span', '', '最近记录')); recentItem.append(recentLink); list?.prepend(recentItem);
     const honorItem = node('li', 'nav-item'); honorItem.dataset.privateNavigation = '';
     const honorLink = node('a', 'nav-link'); honorLink.href = '#honors'; honorLink.dataset.vaultView = 'honors';
     const icon = node('i', 'fa-fw fas fa-award'); icon.setAttribute('aria-hidden', 'true');
@@ -67,9 +70,11 @@
     if (!state?.data) return;
     const content = state.root.querySelector('.private-view-content');
     content.replaceChildren();
-    state.root.querySelectorAll('[data-vault-view]').forEach(button => {
+    state.root.querySelector('[data-vault-heading]').textContent = { recent: '最近记录', example3: '私人专栏', honors: '荣誉成果' }[view] || '最近记录';
+    document.querySelectorAll('[data-private-navigation] [data-vault-view]').forEach(button => {
       if (button.dataset.vaultView === view) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
+      button.closest('.nav-item')?.classList.toggle('active', button.dataset.vaultView === view);
     });
     if (view === 'honors') {
       let index = 0;
