@@ -28,6 +28,7 @@
     viewRevision++;
     clearTimeout(timer);
     document.querySelectorAll('[data-private-navigation]').forEach(item => item.remove());
+    document.querySelectorAll('[data-private-home]').forEach(link => { delete link.dataset.privateHome; delete link.dataset.vaultView; link.removeAttribute('aria-current'); link.closest('.nav-item')?.classList.remove('active'); });
     if (!state) return;
     state.controller.abort();
     state.controller = new AbortController();
@@ -53,8 +54,6 @@
   }
 
   function addNavigation() {
-    const lockButton = node('button', 'private-session-lock', '锁定'); lockButton.type = 'button'; lockButton.dataset.vaultLock = ''; lockButton.dataset.privateNavigation = ''; lockButton.setAttribute('aria-label', '锁定私人空间');
-    document.querySelector('.home-navbar-tools')?.prepend(lockButton);
     const subnav = document.getElementById('sidebar-category-links');
     const item = node('li');
     item.dataset.privateNavigation = '';
@@ -62,9 +61,9 @@
     link.href = '#example3'; link.dataset.vaultView = 'example3';
     item.append(link); subnav?.append(item);
     const list = document.querySelector('#sidebar nav > ul');
-    const recentItem = node('li', 'nav-item'); recentItem.dataset.privateNavigation = '';
-    const recentLink = node('a', 'nav-link'); recentLink.href = '#recent'; recentLink.dataset.vaultView = 'recent';
-    recentLink.append(node('span', '', '最近记录')); recentItem.append(recentLink); list?.prepend(recentItem);
+    document.querySelectorAll('#sidebar a[href="/"], .home-navbar a[href="/"]').forEach(link => {
+      link.dataset.privateHome = ''; link.dataset.vaultView = 'recent';
+    });
     const honorItem = node('li', 'nav-item'); honorItem.dataset.privateNavigation = '';
     const honorLink = node('a', 'nav-link'); honorLink.href = '#honors'; honorLink.dataset.vaultView = 'honors';
     const icon = node('i', 'fa-fw fas fa-award'); icon.setAttribute('aria-hidden', 'true');
@@ -77,8 +76,8 @@
     const content = state.root.querySelector('.private-view-content');
     content.replaceChildren();
     content.removeAttribute('aria-busy');
-    state.root.querySelector('[data-vault-heading]').textContent = { recent: '最近记录', example3: '私人专栏', honors: '荣誉成果' }[view] || '最近记录';
-    document.querySelectorAll('[data-private-navigation] [data-vault-view]').forEach(button => {
+    state.root.querySelector('[data-vault-heading]').textContent = { recent: '首页', example3: '私人专栏', honors: '荣誉成果' }[view] || '首页';
+    document.querySelectorAll('[data-private-navigation] [data-vault-view], [data-private-home]').forEach(button => {
       if (button.dataset.vaultView === view) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
       button.closest('.nav-item')?.classList.toggle('active', button.dataset.vaultView === view);
@@ -133,7 +132,7 @@
       panel.querySelectorAll('script').forEach(script => script.remove());
       content.replaceChildren(...[...panel.childNodes].map(child => document.importNode(child, true)));
       root.querySelector('[data-vault-heading]').textContent = page.querySelector('main h1, .home-feed-heading h2')?.textContent || page.title.split('|')[0].trim();
-      document.querySelectorAll('[data-private-navigation] [data-vault-view]').forEach(link => { link.removeAttribute('aria-current'); link.closest('.nav-item')?.classList.remove('active'); });
+      document.querySelectorAll('[data-private-navigation] [data-vault-view], [data-private-home]').forEach(link => { link.removeAttribute('aria-current'); link.closest('.nav-item')?.classList.remove('active'); });
       history.replaceState(history.state, '', '#public=' + encodeURIComponent(url.pathname + url.search + url.hash));
       document.dispatchEvent(new CustomEvent('site:content-loaded'));
       if (url.hash) {

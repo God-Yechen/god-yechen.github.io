@@ -37,7 +37,5 @@
 .private-view-content { padding-top:1.25rem; }
 #sidebar [data-private-navigation] a[aria-current="page"] { color:var(--sidebar-active-color); font-weight:600; }
 
-.private-session-lock { flex-shrink:0; border:1px solid var(--home-card-border); border-radius:.65rem; padding:.5rem .85rem; background:var(--home-card-bg); color:var(--text-color); font-size:.85rem; cursor:pointer; }
-.private-session-lock::before { content:'🔒'; margin-right:.35rem; }
-.private-session-lock:hover { background:var(--sidebar-hover-bg); }
-.private-session-lock:focus-visible { outline:3px solid #82b5ad; outline-offset:3px; }
+
+.private-heading [data-vault-lock] { display:inline-flex; align-items:center; gap:.35rem; flex-shrink:0; }
