@@ -22,6 +22,7 @@ async function initialize() {
 }
 
 async function encryptVault(password, source = input, destination = output) {
+  if (path.resolve(destination) === path.resolve(output)) { try { await readFile(path.join(local,'visibility-managed.json')); throw new Error('栏目已由本机可见性管理器维护，请勿用旧源文件覆盖。请通过 4012 本机管理页面操作。'); } catch(error) { if(error.code !== 'ENOENT') throw error; } }
   if (typeof password !== 'string' || password.length < 8) throw new Error('密码至少 8 个字符，建议使用随机长密码；不要使用姓名、生日或手机号。');
   const data = JSON.parse((await readFile(source, 'utf8')).replace(/^\uFEFF/, ''));
   if (!Array.isArray(data.posts) || !Array.isArray(data.honors)) throw new Error('vault.json 需要 posts 和 honors 数组。');

@@ -1,0 +1,7 @@
+---
+layout: page
+---
+{% for group in site.data.published_honors %}
+<section><h2>{{ group.title | escape }}</h2><table><thead><tr><th>时间</th><th>名称</th><th>奖项 / 状态</th><th>单位 / 刊物</th><th>证书</th></tr></thead><tbody>
+{% for record in group.records %}<tr><td>{{ record.date | escape }}</td><td>{{ record.name | escape }}</td><td>{{ record.award | default: record.status | escape }}</td><td>{{ record.organizer | default: record.publisher | escape }}</td><td>{% for image in record.certificates %}<a href="{{ image | relative_url }}" target="_blank" rel="noopener">查看图片</a> {% endfor %}{% if record.certificate_pdf %}<a href="{{ record.certificate_pdf | relative_url }}" target="_blank" rel="noopener">查看 PDF</a>{% endif %}</td></tr>{% endfor %}
+</tbody></table></section>{% endfor %}

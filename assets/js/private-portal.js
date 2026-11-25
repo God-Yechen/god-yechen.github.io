@@ -32,7 +32,9 @@
     if (!state) return;
     state.controller.abort();
     state.controller = new AbortController();
-    state.root.querySelector('dialog').close();
+    state.root.querySelector('.private-certificate-dialog').close();
+    state.root.querySelector('.private-apply-dialog')?.close();
+    const confirmPassword = state.root.querySelector('[data-visibility-form] input'); if(confirmPassword) confirmPassword.value = '';
     releaseFiles();
     state.key = null;
     state.data = null;
@@ -60,7 +62,16 @@
     const link = node('a', '', '私人专栏');
     link.href = '#example3'; link.dataset.vaultView = 'example3';
     item.append(link); subnav?.append(item);
+    for (const [id, mode] of Object.entries(state.data.visibility || {})) {
+      if (mode !== 'private' || !id.startsWith('category:') || id === 'category:example3') continue;
+      const row = node('li'); row.dataset.privateNavigation = '';
+      const entry = node('a','',id.slice(9));entry.href='#'+encodeURIComponent(id);entry.dataset.vaultView=id;row.append(entry);subnav?.append(row);
+    }
     const list = document.querySelector('#sidebar nav > ul');
+    for(const [id,page] of Object.entries(state.data.privatePages || {})) {
+      if(state.data.visibility?.[id]!=='private')continue;
+      const row=node('li','nav-item');row.dataset.privateNavigation='';const entry=node('a','nav-link',page.title);entry.href='#'+encodeURIComponent(id);entry.dataset.vaultView=id;row.append(entry);list?.append(row);
+    }
     document.querySelectorAll('#sidebar a[href="/"], .home-navbar a[href="/"]').forEach(link => {
       link.dataset.privateHome = ''; link.dataset.vaultView = 'recent';
     });
@@ -70,19 +81,74 @@
     honorLink.append(icon, node('span', '', '荣誉成果')); honorItem.append(honorLink); list?.append(honorItem);
   }
 
+  function setSectionVisibility(id, initial) {
+    if (!state?.key) return;
+    const actual = state.data.visibility?.[id] || initial;
+    state.section = { id, published: actual };
+    const supported = id === 'honors' || id.startsWith('category:') || ['page:/about/','page:/footprints/','page:/bucket-list/'].includes(id);
+    state.root.querySelectorAll('[data-visibility]').forEach(button => { button.setAttribute('aria-pressed', String(button.dataset.visibility === actual)); button.disabled = !supported; });
+    state.root.querySelector('[data-visibility-status]').textContent = supported
+      ? '本地状态：' + (actual === 'public' ? '公开' : '私密') + '。切换会实际处理本地内容，确认上传后线上才生效。'
+      : '这是汇总或系统页面，请在具体专栏、荣誉成果中设置公开或私密。';
+  }
+  async function applySectionVisibility(event) {
+    event.preventDefault();
+    if (!state?.key || !state.pendingVisibility) return;
+    const root = state.root, form = event.target, input = form.elements.password, password = input.value;
+    input.value = '';
+    const output = form.querySelector('[data-visibility-result]'), submit = form.querySelector('[type=submit]');
+    submit.disabled = true; form.querySelector('[data-visibility-cancel]').disabled = true;
+    output.textContent = '正在保护内容并重新构建，请稍候……';
+    const pending = { ...state.pendingVisibility };
+    try {
+      const sessionResponse = await fetch('/__visibility/session', {cache:'no-store'});
+      if (!sessionResponse.ok) throw new Error('请从本机管理地址 http://127.0.0.1:4012/private-center/ 打开。');
+      const session = await sessionResponse.json();
+      const response = await fetch('/__visibility/apply', {method:'POST',headers:{'Content-Type':'application/json','X-Visibility-Token':session.token},body:JSON.stringify({section:pending.id,visibility:pending.value,password,revision:state.manifestRevision})});
+      const result = await response.json(); if(!response.ok) throw new Error(result.error || '内容处理失败。');
+      if (!state?.key || state.root !== root) return;
+      const envelope = await fetch(root.dataset.vaultManifest+'?fresh='+Date.now(),{cache:'no-store'}).then(r=>r.json());
+      const plain = await crypto.subtle.decrypt({name:'AES-GCM',iv:decode(envelope.iv),additionalData:utf8.encode('wyc-vault:manifest:v1')},state.key,decode(envelope.ciphertext));
+      state.data = JSON.parse(new TextDecoder().decode(plain));
+      state.manifestRevision = [...new Uint8Array(await crypto.subtle.digest('SHA-256',utf8.encode(envelope.ciphertext)))].map(v=>v.toString(16).padStart(2,'0')).join('').slice(0,16);
+      document.querySelectorAll('[data-private-navigation]').forEach(item=>item.remove());
+      const refreshed = new DOMParser().parseFromString(await fetch('/?fresh='+Date.now(),{cache:'no-store'}).then(r=>r.text()),'text/html');
+      const publicList = refreshed.querySelector('#sidebar nav > ul');
+      if(publicList) document.querySelector('#sidebar nav > ul').replaceChildren(...[...publicList.childNodes].map(item=>document.importNode(item,true)));
+      document.querySelector('#sidebar a[href="/honors/"]')?.closest('.nav-item')?.remove();
+      const categoryToggle=document.querySelector('.sidebar-category-toggle'), categoryLinks=document.querySelector('#sidebar-category-links');
+      categoryToggle?.addEventListener('click',()=>{const expanded=categoryToggle.getAttribute('aria-expanded')==='true';categoryToggle.setAttribute('aria-expanded',String(!expanded));categoryToggle.setAttribute('aria-label',expanded?'展开专栏':'收起专栏');categoryLinks.hidden=expanded;});
+      addNavigation();
+      root.querySelector('.private-apply-dialog').close();
+      if (pending.id === 'honors') render('honors');
+      else if (pending.value === 'private') render(pending.id);
+      else if(pending.id.startsWith('page:')) await showPublicPage(new URL(pending.id.slice(5),location.origin));
+      else await showPublicPage(new URL('/categories/#'+encodeURIComponent(pending.id.slice(9)),location.origin));
+      root.querySelector('[data-visibility-status]').textContent += ' 已完成本地处理，线上尚未发布。';
+    } catch(error) { output.textContent = error.message; }
+    finally { submit.disabled = false;form.querySelector('[data-visibility-cancel]').disabled = false; }
+  }
+
   function render(view = 'recent') {
     if (!state?.data) return;
     viewRevision++;
+    setSectionVisibility(view === 'honors' ? 'honors' : view === 'example3' ? 'category:example3' : view.startsWith('category:') || view.startsWith('page:') ? view : 'home', 'private');
     const content = state.root.querySelector('.private-view-content');
     content.replaceChildren();
     content.removeAttribute('aria-busy');
-    state.root.querySelector('[data-vault-heading]').textContent = { recent: '首页', example3: '私人专栏', honors: '荣誉成果' }[view] || '首页';
+    state.root.querySelector('[data-vault-heading]').textContent = { recent: '首页', example3: '私人专栏', honors: '荣誉成果' }[view] || (view.startsWith('category:') ? view.slice(9) : state.data.privatePages?.[view]?.title || '首页');
     document.querySelectorAll('[data-private-navigation] [data-vault-view], [data-private-home]').forEach(button => {
       if (button.dataset.vaultView === view) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
       button.closest('.nav-item')?.classList.toggle('active', button.dataset.vaultView === view);
     });
-    if (view === 'honors') {
+    if(view.startsWith('page:') && state.data.privatePages?.[view]) {
+      const parsed=new DOMParser().parseFromString(state.data.privatePages[view].html,'text/html');
+      parsed.querySelectorAll('script:not([type="application/json"]),iframe,object,embed,link,style,form').forEach(element=>element.remove());
+      for(const element of parsed.body.querySelectorAll('*'))for(const attr of [...element.attributes])if(attr.name.startsWith('on')||(['href','src'].includes(attr.name)&&/^javascript:/i.test(attr.value)))element.removeAttribute(attr.name);
+      content.replaceChildren(...[...parsed.body.childNodes].map(child=>document.importNode(child,true)));
+      document.dispatchEvent(new CustomEvent('site:content-loaded'));
+    } else if (view === 'honors') {
       let index = 0;
       state.records = [];
       for (const section of state.data.honors) {
@@ -106,12 +172,25 @@
       }
       if (!state.records.length) content.append(node('p', 'private-empty', '还没有加入私人荣誉记录。'));
     } else {
-      const posts = [...state.data.posts].filter(post => view !== 'example3' || post.category === 'example3').sort((a, b) => String(b.date).localeCompare(String(a.date)));
+      const posts = [...state.data.posts].filter(post => view === 'example3' ? post.category === 'example3' : view.startsWith('category:') ? post.category === view.slice(9) : true).sort((a, b) => String(b.date).localeCompare(String(a.date)));
       for (const post of posts) {
         const article = node('article', 'private-record');
         const time = node('time', '', post.date || ''); time.dateTime = post.date || '';
         article.append(time, node('h2', '', post.title || '未命名记录'), node('div', 'private-record-body', post.content || ''));
         content.append(article);
+        if (post.html) {
+          const body = article.querySelector('.private-record-body');body.classList.add('has-markdown');
+          const parsed = new DOMParser().parseFromString(post.html, 'text/html');
+          parsed.querySelectorAll('script,iframe,object,embed,link,style,form').forEach(element=>element.remove());
+          for(const element of parsed.body.querySelectorAll('*')) for(const attr of [...element.attributes]) if(attr.name.startsWith('on')||(['href','src'].includes(attr.name)&&/^javascript:/i.test(attr.value)))element.removeAttribute(attr.name);
+          for(const element of parsed.body.querySelectorAll('img[src],a[href]')) { const attr=element.tagName==='IMG'?'src':'href';const raw=element.getAttribute(attr);if(post.sourceArchive?.attachments?.some(a=>decodeURIComponent(raw).replace(/^\//,'')===a.path)){element.dataset.protectedPath=raw;element.removeAttribute(attr);} }
+          body.replaceChildren(...[...parsed.body.childNodes].map(element=>document.importNode(element,true)));
+          const current = generation, viewAtStart = viewRevision;
+          for(const attachment of post.sourceArchive?.attachments || []) {
+            const matches = [...body.querySelectorAll('[data-protected-path]')].filter(element=>decodeURIComponent(element.dataset.protectedPath||'').replace(/^\//,'')===attachment.path);
+            for(const element of matches) { const attr=element.tagName==='IMG'?'src':'href';element.removeAttribute(attr);fileBlob(attachment.file,current).then(blob=>{if(state?.key&&viewRevision===viewAtStart&&element.isConnected){element.setAttribute(attr,keepUrl(blob));if(element.tagName==='A'){element.target='_blank';element.rel='noopener noreferrer';}}}).catch(()=>{element.setAttribute('title','附件读取失败');}); }
+          }
+        }
       }
       if (!posts.length) content.append(node('p', 'private-empty', '这里还没有记录，慢慢写就好。'));
     }
@@ -130,9 +209,15 @@
       if (!panel) throw new Error('页面内容不可用');
       if (current !== viewRevision || !state?.key || state.root !== root) return;
       panel.querySelectorAll('script').forEach(script => script.remove());
+      let sectionTitle = '';
+      if (url.pathname === '/categories/' && url.hash) {
+        const selected = [...panel.querySelectorAll('section[id]')].find(section => section.id === decodeURIComponent(url.hash.slice(1)));
+        if (selected) { sectionTitle = selected.querySelector('h2')?.textContent || ''; panel.replaceChildren(selected); }
+      }
       content.replaceChildren(...[...panel.childNodes].map(child => document.importNode(child, true)));
-      root.querySelector('[data-vault-heading]').textContent = page.querySelector('main h1, .home-feed-heading h2')?.textContent || page.title.split('|')[0].trim();
+      root.querySelector('[data-vault-heading]').textContent = sectionTitle || page.querySelector('main h1, .home-feed-heading h2')?.textContent || page.title.split('|')[0].trim();
       document.querySelectorAll('[data-private-navigation] [data-vault-view], [data-private-home]').forEach(link => { link.removeAttribute('aria-current'); link.closest('.nav-item')?.classList.remove('active'); });
+      setSectionVisibility(url.pathname === '/categories/' && url.hash ? 'category:' + decodeURIComponent(url.hash.slice(1)) : url.pathname === '/honors/' ? 'honors' : 'page:' + url.pathname, 'public');
       history.replaceState(history.state, '', '#public=' + encodeURIComponent(url.pathname + url.search + url.hash));
       document.dispatchEvent(new CustomEvent('site:content-loaded'));
       if (url.hash) {
@@ -171,7 +256,7 @@
     if (!record || !state.key) return;
     const current = ++generation;
     releaseFiles();
-    const dialog = state.root.querySelector('dialog');
+    const dialog = state.root.querySelector('.private-certificate-dialog');
     const body = dialog.querySelector('.honors-certificate-body');
     dialog.querySelector('.private-certificate-title').textContent = record.name;
     body.append(node('p', '', '正在读取证书…')); dialog.showModal();
@@ -248,7 +333,7 @@
         throw new Error('密码不正确，或加密文件已损坏，请重试。' + diagnostic);
       }
       if (current !== generation || !document.contains(root)) return;
-      state.key = key; state.data = data;
+      state.key = key; state.data = data; state.manifestRevision = packageId;
       root.querySelector('.private-lock-screen').hidden = true;
       root.querySelector('.private-workspace').hidden = false;
       addNavigation(); render(['honors', 'example3'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'recent');
@@ -264,9 +349,24 @@
     if (!root) return;
     state = { root, data: null, key: null, records: [], blobs: new Set(), controller: new AbortController() };
     root.querySelector('form.private-unlock-form').addEventListener('submit', unlock);
-    root.querySelector('dialog').addEventListener('close', () => { if (state?.root === root) { generation++; releaseFiles(); } });
+    root.querySelector('[data-visibility-form]').addEventListener('submit',applySectionVisibility);
+    const applyDialog=root.querySelector('.private-apply-dialog');
+    applyDialog.addEventListener('close',()=>{applyDialog.querySelector('input').value='';});
+    applyDialog.addEventListener('cancel',event=>{if(applyDialog.querySelector('[type=submit]').disabled)event.preventDefault();});
+    root.querySelector('.private-certificate-dialog').addEventListener('close', () => { if (state?.root === root) { generation++; releaseFiles(); } });
   }
   document.addEventListener('click', event => {
+    if (event.target.closest('[data-visibility-cancel]')) state?.root.querySelector('.private-apply-dialog').close();
+    const choice = event.target.closest('[data-visibility]');
+    if (choice && state?.key && state.section) {
+      if (choice.dataset.visibility === state.section.published) return;
+      const status = state.root.querySelector('[data-visibility-status]');
+      if (location.hostname !== '127.0.0.1' || location.port !== '4012') { status.textContent = '请在本机管理地址 http://127.0.0.1:4012/private-center/ 操作；线上页面不直接修改本地文件。'; return; }
+      state.pendingVisibility = {id:state.section.id,value:choice.dataset.visibility};
+      const dialog = state.root.querySelector('.private-apply-dialog');
+      dialog.querySelector('[data-visibility-confirm]').textContent = '将“'+state.root.querySelector('[data-vault-heading]').textContent+'”改为'+(choice.dataset.visibility === 'public' ? '公开' : '私密')+'？';
+      dialog.querySelector('[data-visibility-result]').textContent = '';dialog.showModal();dialog.querySelector('input').focus();return;
+    }
     const visibility = event.target.closest('[data-vault-show]');
     if (visibility && state) {
       const password = state.root.querySelector('#private-password');
@@ -286,7 +386,11 @@
     if (state?.key && link && !view && !event.defaultPrevented && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey && !event.button && !link.target && !link.hasAttribute('download') && link.getAttribute('role') !== 'button') {
       const url = new URL(link.href, location.href);
       if (url.origin === location.origin && url.pathname !== location.pathname && !/\.[a-z0-9]+$/i.test(url.pathname) && !url.pathname.startsWith('/assets/')) {
-        event.preventDefault(); event.stopImmediatePropagation(); showPublicPage(url); return;
+        event.preventDefault(); event.stopImmediatePropagation();
+        const privateTarget = url.pathname === '/categories/' && url.hash ? 'category:'+decodeURIComponent(url.hash.slice(1)) : 'page:'+url.pathname;
+        if(state.data.visibility?.[privateTarget]==='private') render(privateTarget);
+        else showPublicPage(url);
+        return;
       }
     }
     const proof = event.target.closest('[data-private-certificate]');

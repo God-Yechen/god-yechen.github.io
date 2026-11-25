@@ -32,6 +32,7 @@ export async function startVaultBridge({ repo, port = 4011, upstream = 'http://1
     return target;
   }
   async function sourceData() {
+    try { await readFile(path.join(repo,'.private-local/visibility-managed.json')); fail(409,'栏目已通过可见性管理器更新，请勿使用旧源文件重新生成。请打开 4012 本机管理页面。'); } catch(error) { if(error.code !== 'ENOENT') throw error; }
     const target = await safeTarget('.private-local/vault.json');
     if (!within(await realpath(target))) fail(403, '私人源文件超出网站目录。');
     const data = JSON.parse((await readFile(target, 'utf8')).replace(/^\uFEFF/, ''));

@@ -15,9 +15,16 @@ layout: default
     <a class="private-return" href="{{ '/' | relative_url }}">回到公开主页</a>
   </div>
   <div class="private-workspace" hidden>
-    <header class="private-heading"><div><p class="private-eyebrow">PERSONAL SPACE</p><h1 data-vault-heading>首页</h1></div><button type="button" data-vault-lock><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></svg> 锁定</button></header>
+    <header class="private-heading"><div><p class="private-eyebrow">PERSONAL SPACE</p><h1 data-vault-heading>首页</h1></div><div class="private-heading-actions"><div class="private-visibility-toggle" role="group" aria-label="栏目公开设置"><button type="button" data-visibility="public" aria-pressed="false">公开</button><button type="button" data-visibility="private" aria-pressed="true">私密</button></div><button type="button" data-vault-lock><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 15v2"/></svg> 锁定</button></div></header>
+    <p class="private-visibility-status" data-visibility-status role="status"></p>
     <div class="private-view-content" aria-live="polite"></div>
   </div>
+  <dialog class="private-apply-dialog" aria-labelledby="private-apply-title">
+    <form data-visibility-form><h2 id="private-apply-title">更改栏目可见性</h2><p data-visibility-confirm></p>
+    <p class="private-visibility-note">此操作会修改本地文章和附件，并重新构建预览。不会自动上传；已经公开过的 Git 历史及外部副本不会自动删除。</p>
+    <label>输入私人空间密码确认<input type="password" name="password" minlength="8" autocomplete="current-password" required></label>
+    <p data-visibility-result role="status"></p><div class="private-heading-actions"><button type="button" data-visibility-cancel>取消</button><button type="submit" class="private-primary">处理并生成本地预览</button></div></form>
+  </dialog>
   <dialog class="honors-certificate-dialog private-certificate-dialog" aria-label="私人证书预览">
     <header class="honors-certificate-header"><div><h2 class="private-certificate-title"></h2></div><div class="private-file-actions"></div><form method="dialog"><button class="honors-certificate-close" aria-label="关闭证书窗口"><span aria-hidden="true"></span></button></form></header>
     <div class="honors-certificate-body"></div>
