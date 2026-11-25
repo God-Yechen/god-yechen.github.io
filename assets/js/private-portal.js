@@ -6,6 +6,7 @@
   let state = null;
   let generation = 0;
   let timer;
+  let viewRevision = 0;
 
   function node(tag, className, text) {
     const element = document.createElement(tag);
@@ -24,6 +25,7 @@
 
   function lock(message = '已锁定，请输入密码重新解锁。') {
     generation++;
+    viewRevision++;
     clearTimeout(timer);
     document.querySelectorAll('[data-private-navigation]').forEach(item => item.remove());
     if (!state) return;
@@ -35,6 +37,7 @@
     state.data = null;
     state.records = [];
     state.root.querySelector('.private-view-content').replaceChildren();
+    state.root.querySelector('.private-view-content').removeAttribute('aria-busy');
     state.root.querySelector('.private-workspace').hidden = true;
     state.root.querySelector('.private-lock-screen').hidden = false;
     state.root.querySelector('#private-password').value = '';
@@ -50,6 +53,8 @@
   }
 
   function addNavigation() {
+    const lockButton = node('button', 'private-session-lock', '锁定'); lockButton.type = 'button'; lockButton.dataset.vaultLock = ''; lockButton.dataset.privateNavigation = ''; lockButton.setAttribute('aria-label', '锁定私人空间');
+    document.querySelector('.home-navbar-tools')?.prepend(lockButton);
     const subnav = document.getElementById('sidebar-category-links');
     const item = node('li');
     item.dataset.privateNavigation = '';
@@ -68,8 +73,10 @@
 
   function render(view = 'recent') {
     if (!state?.data) return;
+    viewRevision++;
     const content = state.root.querySelector('.private-view-content');
     content.replaceChildren();
+    content.removeAttribute('aria-busy');
     state.root.querySelector('[data-vault-heading]').textContent = { recent: '最近记录', example3: '私人专栏', honors: '荣誉成果' }[view] || '最近记录';
     document.querySelectorAll('[data-private-navigation] [data-vault-view]').forEach(button => {
       if (button.dataset.vaultView === view) button.setAttribute('aria-current', 'page');
@@ -109,6 +116,33 @@
       }
       if (!posts.length) content.append(node('p', 'private-empty', '这里还没有记录，慢慢写就好。'));
     }
+  }
+
+  async function showPublicPage(url) {
+    const current = ++viewRevision;
+    const root = state.root;
+    const content = root.querySelector('.private-view-content');
+    content.setAttribute('aria-busy', 'true');
+    try {
+      const response = await fetch(url.href, { signal: state.controller.signal });
+      if (!response.ok) throw new Error('无法读取页面');
+      const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+      const panel = page.querySelector('#panel-content');
+      if (!panel) throw new Error('页面内容不可用');
+      if (current !== viewRevision || !state?.key || state.root !== root) return;
+      panel.querySelectorAll('script').forEach(script => script.remove());
+      content.replaceChildren(...[...panel.childNodes].map(child => document.importNode(child, true)));
+      root.querySelector('[data-vault-heading]').textContent = page.querySelector('main h1, .home-feed-heading h2')?.textContent || page.title.split('|')[0].trim();
+      document.querySelectorAll('[data-private-navigation] [data-vault-view]').forEach(link => { link.removeAttribute('aria-current'); link.closest('.nav-item')?.classList.remove('active'); });
+      history.replaceState(history.state, '', '#public=' + encodeURIComponent(url.pathname + url.search + url.hash));
+      document.dispatchEvent(new CustomEvent('site:content-loaded'));
+      if (url.hash) {
+        const target = [...content.querySelectorAll('[id]')].find(element => element.id === decodeURIComponent(url.hash.slice(1)));
+        target?.scrollIntoView({ block: 'start' });
+      }
+    } catch (error) {
+      if (current === viewRevision && state?.key && error.name !== 'AbortError') content.replaceChildren(node('p', 'private-empty', '页面暂时无法加载，请重新点击左侧栏目。私人空间仍保持解锁。'));
+    } finally { if (current === viewRevision) content.removeAttribute('aria-busy'); }
   }
 
   async function fileBlob(file, current) {
@@ -248,7 +282,14 @@
       render(view.dataset.vaultView);
       history.replaceState(history.state, '', '#' + view.dataset.vaultView);
     }
-    if (event.target.closest('[data-vault-lock]')) lock();
+    if (event.target.closest('[data-vault-lock]')) { lock(); return; }
+    const link = event.target.closest('a[href]');
+    if (state?.key && link && !view && !event.defaultPrevented && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey && !event.button && !link.target && !link.hasAttribute('download') && link.getAttribute('role') !== 'button') {
+      const url = new URL(link.href, location.href);
+      if (url.origin === location.origin && url.pathname !== location.pathname && !/\.[a-z0-9]+$/i.test(url.pathname) && !url.pathname.startsWith('/assets/')) {
+        event.preventDefault(); event.stopImmediatePropagation(); showPublicPage(url); return;
+      }
+    }
     const proof = event.target.closest('[data-private-certificate]');
     if (proof) preview(Number(proof.dataset.privateCertificate));
   }, true);
