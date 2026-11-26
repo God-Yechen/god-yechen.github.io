@@ -147,6 +147,15 @@
       parsed.querySelectorAll('script:not([type="application/json"]),iframe,object,embed,link,style,form').forEach(element=>element.remove());
       for(const element of parsed.body.querySelectorAll('*'))for(const attr of [...element.attributes])if(attr.name.startsWith('on')||(['href','src'].includes(attr.name)&&/^javascript:/i.test(attr.value)))element.removeAttribute(attr.name);
       content.replaceChildren(...[...parsed.body.childNodes].map(child=>document.importNode(child,true)));
+      state.records = [];
+      const appointments = state.data.privatePages[view].appointments || [];
+      content.querySelectorAll('[data-private-appointment]').forEach(button => {
+        const record = appointments.find(item => item.id === button.dataset.privateAppointment);
+        if (!record || (!record.certificate_pdf && !record.certificates?.length)) { button.replaceWith(node('span','',button.textContent.trim())); return; }
+        button.dataset.privateCertificate = String(state.records.length);
+        button.setAttribute('aria-label','查看'+record.name+'任职证明');
+        state.records.push(record);
+      });
       document.dispatchEvent(new CustomEvent('site:content-loaded'));
     } else if (view === 'honors') {
       let index = 0;

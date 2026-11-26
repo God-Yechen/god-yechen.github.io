@@ -66,6 +66,12 @@ async function encryptVault(password, source = input, destination = output) {
       record.certificate_pdf = await protectFile(record.certificate_pdf);
     }
   }
+  for (const page of Object.values(data.privatePages || {})) {
+    for (const appointment of page.appointments || []) {
+      appointment.certificates = await Promise.all((appointment.certificates || []).map(protectFile));
+      appointment.certificate_pdf = await protectFile(appointment.certificate_pdf);
+    }
+  }
   const iv = randomBytes(12);
   const ciphertext = await webcrypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: utf8.encode('wyc-vault:manifest:v1') }, key, utf8.encode(JSON.stringify(data)));
   const envelope = { version: 1, kdf: 'PBKDF2-SHA256', iterations: 600000, salt: b64(salt), iv: b64(iv), ciphertext: b64(ciphertext) };

@@ -50,6 +50,11 @@ export async function startVaultBridge({ repo, port = 4011, upstream = 'http://1
           paths.add(relative(decoded.startsWith('/') ? decoded.slice(1) : decoded));
         }
       }
+      for (const page of Object.values(source.privatePages || {})) for (const appointment of page.appointments || []) {
+        for (const file of [...(appointment.certificates || []),appointment.certificate_pdf].filter(Boolean)) {
+          const decoded=decodeURIComponent(file);paths.add(relative(decoded.startsWith('/')?decoded.slice(1):decoded));
+        }
+      }
       if (!paths.has(name)) fail(403, '仅可读取私人源文件及其证书附件。');
     }
     const target = await safeTarget(name);

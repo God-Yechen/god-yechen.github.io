@@ -87,19 +87,45 @@ export async function applyVisibility({repo,section,visibility,password,revision
     const pages={ '/growth-resume/':{path:'_tabs/growth-resume.md',files:[]}, '/about/':{path:'_tabs/about.md',files:[]}, '/footprints/':{path:'_tabs/footprints.md',files:['_data/footprints.yml']}, '/bucket-list/':{path:'_tabs/bucket-list.md',files:['_data/bucket_list.yml']} };
     const entry=pages[url];if(!entry)throw new Error('请在具体专栏或内容页设置，汇总页面不能整体切换。');
     data.privatePages ||= {};
+    data.publishedPageSources ||= {};
     if(visibility==='private') {
       const source=(await readFile(await safe(entry.path))).toString('utf8');
-      if(/!\[[^\]]*\]\(|<img/i.test(source))throw new Error('此页面含独立图片，请先整理附件，避免仅保护正文。');
-      const compiled=(await readFile(await safe('_site'+url+'index.html'))).toString('utf8');
-      const matched=compiled.match(/<div id="panel-content">([\s\S]*?)<\/div>\s*<\/main>/);
-      if(!matched)throw new Error('请先生成该页面的本地预览。');
-      const title=source.match(/^title:\s*(.+)$/m)?.[1]?.replace(/^["']|["']$/g,'') || url;
-      const files=[];for(const name of entry.files){files.push({path:name,bytes:(await readFile(await safe(name))).toString('base64')});await change(name,null);}
-      data.privatePages[section]={title,path:entry.path,source,html:matched[1],files};await change(entry.path,null);
+      const cached=data.publishedPageSources[section];
+      if(cached){
+        if(source!==cached.publicSource)throw new Error('公开页面已被修改，请先整理后再转为私密，避免丢失改动。');
+        data.privatePages[section]=cached.page;
+        for(const file of data.publishedSections[section]||[])await change(file,null);
+        delete data.publishedSections[section];delete data.publishedPageSources[section];
+        await change(entry.path,null);
+      } else {
+        if(/!\[[^\]]*\]\(|<img/i.test(source))throw new Error('此页面含独立图片，请先整理附件，避免仅保护正文。');
+        const compiled=(await readFile(await safe('_site'+url+'index.html'))).toString('utf8');
+        const matched=compiled.match(/<div id="panel-content">([\s\S]*?)<\/div>\s*<\/main>/);
+        if(!matched)throw new Error('请先生成该页面的本地预览。');
+        const title=source.match(/^title:\s*(.+)$/m)?.[1]?.replace(/^["']|["']$/g,'') || url;
+        const files=[];for(const name of entry.files){files.push({path:name,bytes:(await readFile(await safe(name))).toString('base64')});await change(name,null);}
+        data.privatePages[section]={title,path:entry.path,source,html:matched[1],files};await change(entry.path,null);
+      }
     } else {
       const saved=data.privatePages[section];if(!saved)throw new Error('没有找到可恢复的页面备份。');
       if(await exists(await safe(saved.path)))throw new Error('恢复位置已有同名页面，未覆盖。');
-      await change(saved.path,saved.source);for(const file of saved.files)await change(file.path,Buffer.from(file.bytes,'base64'));delete data.privatePages[section];
+      let publicSource=saved.source;const exported=[];
+      for(const appointment of saved.appointments||[]) {
+        let link='';
+        for(const file of [...(appointment.certificates||[]),appointment.certificate_pdf].filter(Boolean)) {
+          const target='assets/published-growth-resume/'+file.id+path.extname(file.name);
+          await change(target,await decryptFile(file));exported.push(target);
+          if(file===appointment.certificate_pdf||!link)link='/'+target;
+        }
+        if(link){
+          const id=String(appointment.id);if(!/^[a-z0-9-]+$/i.test(id))throw new Error('任职记录标识无效。');
+          const pattern=new RegExp('<button\\b[^>]*data-private-appointment="'+id+'"[^>]*>[\\s\\S]*?<\\/button>','g');
+          const label=String(appointment.name).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+          publicSource=publicSource.replace(pattern,'<a class="growth-role-link" href="'+link+'" target="_blank" rel="noopener noreferrer">'+label+'</a>');
+        }
+      }
+      if(exported.length){data.publishedPageSources[section]={page:saved,publicSource};data.publishedSections[section]=exported;}
+      await change(saved.path,publicSource);for(const file of saved.files)await change(file.path,Buffer.from(file.bytes,'base64'));delete data.privatePages[section];
     }
   } else if(section==='honors') {
     const exported=data.publishedSections.honors || [];

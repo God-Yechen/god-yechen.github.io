@@ -79,3 +79,7 @@
 .growth-table td:nth-child(1),.growth-table td:nth-child(2) { width:7rem; white-space:nowrap; font-variant-numeric:tabular-nums; font-weight:500; }
 .growth-present { color:var(--home-accent); background:color-mix(in srgb,var(--home-accent) 8%,transparent); padding:3px 10px; border-radius:20px; font-size:.8rem; }
 @media(max-width:600px) { .growth-resume .growth-table th,.growth-resume .growth-table td { padding:.8rem; } }
+
+.growth-resume .growth-role-link { display:inline; padding:0; border:0; border-radius:0; background:transparent; color:var(--home-accent); font:inherit; line-height:1.7; text-align:left; text-decoration:underline; text-decoration-color:color-mix(in srgb,var(--home-accent) 35%,transparent); text-underline-offset:4px; cursor:pointer; }
+.growth-role-link svg { vertical-align:-1px; margin-left:3px; }
+.growth-resume .growth-role-link:hover { text-decoration-color:currentColor; }
