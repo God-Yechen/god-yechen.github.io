@@ -84,7 +84,7 @@ export async function applyVisibility({repo,section,visibility,password,revision
     }
   } else if(section.startsWith('page:')) {
     const url=section.slice(5);
-    const pages={ '/about/':{path:'_tabs/about.md',files:[]}, '/footprints/':{path:'_tabs/footprints.md',files:['_data/footprints.yml']}, '/bucket-list/':{path:'_tabs/bucket-list.md',files:['_data/bucket_list.yml']} };
+    const pages={ '/growth-resume/':{path:'_tabs/growth-resume.md',files:[]}, '/about/':{path:'_tabs/about.md',files:[]}, '/footprints/':{path:'_tabs/footprints.md',files:['_data/footprints.yml']}, '/bucket-list/':{path:'_tabs/bucket-list.md',files:['_data/bucket_list.yml']} };
     const entry=pages[url];if(!entry)throw new Error('请在具体专栏或内容页设置，汇总页面不能整体切换。');
     data.privatePages ||= {};
     if(visibility==='private') {

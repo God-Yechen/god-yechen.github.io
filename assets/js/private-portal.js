@@ -85,7 +85,7 @@
     if (!state?.key) return;
     const actual = state.data.visibility?.[id] || initial;
     state.section = { id, published: actual };
-    const supported = id === 'honors' || id.startsWith('category:') || ['page:/about/','page:/footprints/','page:/bucket-list/'].includes(id);
+    const supported = id === 'honors' || id.startsWith('category:') || ['page:/about/','page:/footprints/','page:/bucket-list/','page:/growth-resume/'].includes(id);
     state.root.querySelectorAll('[data-visibility]').forEach(button => { button.setAttribute('aria-pressed', String(button.dataset.visibility === actual)); button.disabled = !supported; });
     state.root.querySelector('[data-visibility-status]').textContent = supported
       ? '本地状态：' + (actual === 'public' ? '公开' : '私密') + '。切换会实际处理本地内容，确认上传后线上才生效。'
@@ -155,8 +155,9 @@
         content.append(node('h2', '', section.title || '荣誉记录'));
         const wrapper = node('div', 'private-table-wrap');
         const table = node('table', 'private-table');
+        const school = section.title === '学校荣誉';
         const row = node('tr');
-        for (const name of ['时间', '名称', '奖项 / 状态', '单位 / 刊物']) row.append(node('th', '', name));
+        for (const name of (school ? ['时间', '荣誉名称', '颁发单位'] : ['时间', '名称', '奖项 / 状态', '单位 / 刊物'])) row.append(node('th', '', name));
         const head = node('thead'); head.append(row); table.append(head);
         const body = node('tbody');
         const records = [...(section.records || [])].sort((a, b) => String(b.date).localeCompare(String(a.date)));
@@ -164,9 +165,12 @@
           const tr = node('tr');
           tr.append(node('td', '', record.date || ''));
           const name = node('td');
-          const button = node('button', '', record.name || '未命名记录'); button.type = 'button'; button.dataset.privateCertificate = String(index++);
-          name.append(button); tr.append(name, node('td', '', record.award || record.status || ''), node('td', '', record.organizer || record.publisher || ''));
-          body.append(tr); state.records.push(record);
+          const displayName = school && /三好学生|优秀学生干部/.test(record.name || '') ? record.name.replace(/[（(][^）)]*[）)]/g, '').trim() : record.name;
+          const button = node('button', '', displayName || '未命名记录'); button.type = 'button'; button.dataset.privateCertificate = String(index++);
+          name.append(button); tr.append(name);
+          if (!school) tr.append(node('td', '', record.award || record.status || ''));
+          tr.append(node('td', '', record.organizer || record.publisher || ''));
+          body.append(tr); state.records.push({ ...record, name: displayName || record.name });
         }
         table.append(body); wrapper.append(table); content.append(wrapper);
       }
@@ -336,7 +340,9 @@
       state.key = key; state.data = data; state.manifestRevision = packageId;
       root.querySelector('.private-lock-screen').hidden = true;
       root.querySelector('.private-workspace').hidden = false;
-      addNavigation(); render(['honors', 'example3'].includes(location.hash.slice(1)) ? location.hash.slice(1) : 'recent');
+      let initialView = 'recent';
+      try { const requested = decodeURIComponent(location.hash.slice(1)); if(['honors','example3','recent'].includes(requested) || (requested.startsWith('category:') && data.visibility?.[requested] === 'private') || data.privatePages?.[requested]) initialView = requested; } catch {}
+      addNavigation(); render(initialView);
       postponeLock();
     } catch (error) { if (current === generation) status.textContent = error.name === 'AbortError' ? '已取消解锁。' : error.message; }
     finally { enteredBytes.fill(0); password.value = ''; password.type = 'password'; root.querySelector('[data-vault-show]').textContent = '显示'; root.querySelector('[data-vault-show]').setAttribute('aria-pressed', 'false'); button.disabled = false; }
