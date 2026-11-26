@@ -27,7 +27,7 @@ toc: false
 直到九月下旬，得知两位学长学姐分别去了山东大学威海校区和中国农业大学，我才第一次真切地受到触动。此前，保研对我来说只是一个新出现的名词；看到他们的去向后，我才意识到，这个机会真的有可能让我们从一所普通本科院校，走向原本觉得有些遥远的平台。
 {: .prose-paragraph }
 
-![观景点远望跨海大桥](/assets/img/posts/2026-11-25-recommendation-memoir-01-wait-and-see/dalian-bridge-viewpoint.jpg)
+![观景点远望跨海大桥](/assets/img/posts/2026-11-25-recommendation-memoir-01-wait-and-see/dalian-bridge-viewpoint.jpg){: .w-75 }
 
 也是从那时起，我开始认真想：这条路，自己有没有可能走一走？
 {: .prose-paragraph }
@@ -38,7 +38,7 @@ toc: false
 但心动归心动，真正要调整方向时，我还是犹豫了。保研和我原先的出国规划，需要不同的准备，我得认真考虑接下来把时间和精力放在哪里。更现实的问题是，我当时的成绩排名第四，而学院这一届只有两个推免名额。如果名额一直维持在两个，机会很可能轮不到我。
 {: .prose-paragraph }
 
-![暮色中的跨海大桥与路灯](/assets/img/posts/2026-11-25-recommendation-memoir-01-wait-and-see/dalian-bridge-evening.jpg)
+![暮色中的跨海大桥与路灯](/assets/img/posts/2026-11-25-recommendation-memoir-01-wait-and-see/dalian-bridge-evening.jpg){: .w-75 }
 
 所以，慎重考虑之后，我没有立刻转向保研，而是决定先保持观望。这条路已经进入了我的视野，但当时的我，还不知道自己究竟有没有机会走上去。
 {: .prose-paragraph }
