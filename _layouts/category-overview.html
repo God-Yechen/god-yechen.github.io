@@ -11,22 +11,30 @@ layout: page
   {% endunless %}
 {% endfor %}
 
+<p class="column-intro">把经历分成几个篇章，点开一栏，慢慢往下读。</p>
+<div class="column-collection" data-column-collection>
 {% assign empty_posts = '' | split: '' %}
 {% for category_name in section_names %}
   {% assign category_posts = site.categories[category_name] | default: empty_posts | where_exp: 'post', 'post.hidden != true' | sort: 'date' | reverse %}
-  <section id="{{ category_name | slugify | escape }}" class="mb-5" style="scroll-margin-top: 5rem;">
-    <h2>{{ category_name | escape }}</h2>
-    {% if category_posts.size > 0 %}
-      <ul class="list-unstyled">
-        {% for post in category_posts %}
-          <li class="d-flex justify-content-between gap-3 mb-2">
-            <a href="{{ post.url | relative_url }}">{{ post.title | escape }}</a>
-            <time class="text-muted text-nowrap" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y-%m-%d' }}</time>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-muted">暂无文章。</p>
-    {% endif %}
+  <section id="{{ category_name | slugify | escape }}" class="column-section">
+    <details class="column-card" data-column-card>
+      <summary class="column-card-heading">
+        <span class="column-number" aria-hidden="true">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+        <div class="column-copy"><h2>{{ category_name | escape }}</h2><p>{{ site.data.category_descriptions[category_name] | default: '一些值得留下的经历与想法，慢慢记录，也慢慢回望。' | escape }}</p><span class="column-count">{{ category_posts.size }} 篇文章</span></div>
+        <span class="column-open" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17 17 7M7 7h10v10"/></svg></span>
+      </summary>
+      <div class="column-articles">
+        {% if category_posts.size > 0 %}
+          <ul>
+          {% for post in category_posts %}
+            <li><a href="{{ post.url | relative_url }}"><span class="column-post-title">{{ post.title | escape }}</span><span class="column-post-meta"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y-%m-%d' }}</time><span aria-hidden="true">阅读 →</span></span></a></li>
+          {% endfor %}
+          </ul>
+        {% else %}
+          <p class="column-empty">这里还没有文章，下一段故事正在路上。</p>
+        {% endif %}
+      </div>
+    </details>
   </section>
 {% endfor %}
+</div>

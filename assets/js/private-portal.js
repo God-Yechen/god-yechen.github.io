@@ -212,7 +212,7 @@
       let sectionTitle = '';
       if (url.pathname === '/categories/' && url.hash) {
         const selected = [...panel.querySelectorAll('section[id]')].find(section => section.id === decodeURIComponent(url.hash.slice(1)));
-        if (selected) { sectionTitle = selected.querySelector('h2')?.textContent || ''; panel.replaceChildren(selected); }
+        if (selected) { sectionTitle = selected.querySelector('h2')?.textContent || ''; const card=selected.querySelector('[data-column-card]');if(card)card.open=true; panel.replaceChildren(selected); }
       }
       content.replaceChildren(...[...panel.childNodes].map(child => document.importNode(child, true)));
       root.querySelector('[data-vault-heading]').textContent = sectionTitle || page.querySelector('main h1, .home-feed-heading h2')?.textContent || page.title.split('|')[0].trim();
